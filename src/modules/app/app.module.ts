@@ -1,3 +1,4 @@
+import { WarehouseModule } from "./../warehouse/warehouse.module";
 import * as winston from "winston";
 import * as rotateFile from "winston-daily-rotate-file";
 import { Module } from "@nestjs/common";
@@ -66,6 +67,7 @@ import { roles } from "./app.roles";
     ConfigModule,
     AuthModule,
     ProfileModule,
+    WarehouseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

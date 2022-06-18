@@ -13,7 +13,7 @@ import { ACGuard, UseRoles } from "nest-access-control";
 import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ProfileService, IGenericMessageBody } from "./profile.service";
 import { PatchProfilePayload } from "./payload/patch.profile.payload";
-import { IProfile } from "./profile.model";
+import { IProfile } from "models/profile.model";
 
 /**
  * Profile Controller

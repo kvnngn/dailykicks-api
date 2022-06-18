@@ -2,9 +2,9 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "../config/config.service";
 import { ProfileService } from "../profile/profile.service";
-import { IProfile } from "../profile/profile.model";
 import { LoginPayload } from "./payload/login.payload";
 import { Schema } from "mongoose";
+import { IProfile } from "models/profile.model";
 
 /**
  * Models a typical Login/Register route return body

@@ -7,10 +7,10 @@ import {
   Injectable,
   NotAcceptableException,
 } from "@nestjs/common";
-import { IProfile } from "./profile.model";
 import { RegisterPayload } from "modules/auth/payload/register.payload";
 import { AppRoles } from "../app/app.roles";
 import { PatchProfilePayload } from "./payload/patch.profile.payload";
+import { IProfile } from "models/profile.model";
 
 /**
  * Models a typical response for a crud operation
