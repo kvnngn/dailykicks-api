@@ -1,23 +1,25 @@
-import { Schema, Document } from "mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import * as mongoose from "mongoose";
+import { Profile } from "./profile.model";
 
-export const Warehouse = new Schema({
-  name: { type: String, required: true },
-  createdBy: { type: Schema.Types.ObjectId, required: true },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  lastUpdatedBy: { type: Schema.Types.ObjectId, required: true },
-  lastUpdated: {
-    type: Date,
-  },
-});
+export type WarehouseDocument = Warehouse & Document;
 
-export interface IWarehouse extends Document {
-  readonly _id: Schema.Types.ObjectId;
-  readonly name: string;
-  readonly createdAt: Date;
-  readonly createdBy: string;
-  readonly lastUpdated: Date;
-  readonly lastUpdatedBy: string;
+@Schema()
+export class Warehouse {
+  @Prop({ required: true, unique: true })
+  name: string;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Profile",
+    required: true,
+  })
+  createdBy: Profile;
+
+  @Prop()
+  createdAt: Date;
+  @Prop()
+  updatedAt: Date;
 }
+
+export const WarehouseSchema = SchemaFactory.createForClass(Warehouse);

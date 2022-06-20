@@ -5,9 +5,9 @@ import {
 } from "@nestjs/platform-fastify";
 import headers from "fastify-helmet";
 import fastifyRateLimiter from "fastify-rate-limit";
-import { AppModule } from "./modules/app/app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import { AppModule } from "app.module";
 
 /**
  * The url endpoint for open api ui

@@ -1,56 +1,26 @@
-import { Schema, Document } from "mongoose";
-import { AppRoles } from "modules/app/app.roles";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
-/**
- * Mongoose Profile Schema
- */
-export const Profile = new Schema({
-  firstname: { type: String, required: true },
-  lastname: { type: String, required: true },
-  email: { type: String, required: true },
-  password: { type: String, required: true },
-  avatar: { type: String, required: true },
-  roles: [{ type: String }],
-  date: {
-    type: Date,
-    default: Date.now,
-  },
-});
+export type ProfileDocument = Profile & Document;
 
-/**
- * Mongoose Profile Document
- */
-export interface IProfile extends Document {
-  /**
-   * UUID
-   */
-  readonly _id: Schema.Types.ObjectId;
-  /**
-   * Firstname
-   */
-  readonly firstname: string;
-  /**
-   * Lastname
-   */
-  readonly lastname: string;
-  /**
-   * Email
-   */
-  readonly email: string;
-  /**
-   * Password
-   */
+@Schema()
+export class Profile {
+  @Prop({ required: true })
+  firstname: string;
+
+  @Prop({ required: true })
+  lastname: string;
+
+  @Prop({ required: true })
+  email: string;
+
+  @Prop({ required: true })
   password: string;
-  /**
-   * Gravatar
-   */
-  readonly avatar: string;
-  /**
-   * Roles
-   */
-  readonly roles: AppRoles;
-  /**
-   * Date
-   */
-  readonly date: Date;
+
+  @Prop()
+  avatar: string;
+
+  @Prop()
+  roles: string;
 }
+
+export const ProfileSchema = SchemaFactory.createForClass(Profile);
