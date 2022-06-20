@@ -31,16 +31,15 @@ class WarehouseService {
   async get(pageOptionsDto: PageOptionsDto): Promise<PageDto<WarehouseDto>> {
     console.log({ pageOptionsDto });
 
-    const PAGE_SIZE = 50;
+    const PAGE_SIZE = pageOptionsDto.limit;
     const name = pageOptionsDto.searchQuery || ".";
-    const page = pageOptionsDto.offset;
-    const skip = (page - 1) * PAGE_SIZE;
+
     let entities = await this.warehouseModel
       .find({
         name: { $regex: new RegExp(name, "i") },
       })
-      .sort({ name: 1 })
-      .skip(skip)
+      .sort(pageOptionsDto.sort)
+      .skip(pageOptionsDto.skip)
       .limit(PAGE_SIZE)
       .populate([{ path: "createdBy", model: "Profile" }]);
 
