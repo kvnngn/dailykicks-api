@@ -51,5 +51,5 @@ export const SWAGGER_API_CURRENT_VERSION = "1.0";
   });
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(9000, "0.0.0.0");
+  await app.listen(443, "0.0.0.0");
 })();

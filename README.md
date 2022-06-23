@@ -42,7 +42,7 @@ This boilerplate is made to quickly prototype backend applications. It comes wit
 
 - Download dependencies using `npm i` or `yarn`
 
-- Start the app in pre-production mode using `npm run start` or `npm run start:dev` for development (the app will be exposed on the port 9000; not to conflict with React, Angular, or Vue)
+- Start the app in pre-production mode using `npm run start` or `npm run start:dev` for development (the app will be exposed on the port 443; not to conflict with React, Angular, or Vue)
 
 #### Deploying with Docker 🐳
 
@@ -52,7 +52,7 @@ This boilerplate is made to quickly prototype backend applications. It comes wit
 # creates and loads the docker container with required configuration
 $ docker-compose up -d 
 ```
-- The following command will set up and run the docker project for quick use. Then the web application, and MongoDB will be exposed to http://localhost:9000 and http://localhost:27017 respectively.
+- The following command will set up and run the docker project for quick use. Then the web application, and MongoDB will be exposed to http://localhost:443 and http://localhost:27017 respectively.
 
 ### 🔒 Environment Configuration
 
