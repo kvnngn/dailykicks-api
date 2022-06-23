@@ -18,9 +18,9 @@ import ProfileService from "services/profile.service";
 export class ProfileController {
   /**
    * Constructor
-   * @param ProfileService
+   * @param profileService
    */
-  constructor(private ProfileService: ProfileService) {}
+  constructor(private profileService: ProfileService) {}
 
   /**
    * Retrieves a particular profile
@@ -32,7 +32,7 @@ export class ProfileController {
   @ApiResponse({ status: 200, description: "Fetch Profile Request Received" })
   @ApiResponse({ status: 400, description: "Fetch Profile Request Failed" })
   async getProfileByEmail(@Param("email") email: string) {
-    const profile = await this.ProfileService.getByEmail(email);
+    const profile = await this.profileService.getByEmail(email);
     if (!profile) {
       throw new BadRequestException(
         "The profile with that username could not be found.",
@@ -51,7 +51,8 @@ export class ProfileController {
   @ApiResponse({ status: 200, description: "Fetch Profile Request Received" })
   @ApiResponse({ status: 400, description: "Fetch Profile Request Failed" })
   async getProfileById(@Param("id") id: string) {
-    const profile = await this.ProfileService.getById(id);
+    const profile = await this.profileService.getById(id);
+    console.log({ profile });
     if (!profile) {
       throw new BadRequestException(
         "The profile with that id could not be found.",

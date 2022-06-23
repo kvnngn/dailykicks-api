@@ -1,22 +1,22 @@
-import { PageDto } from './../dtos/page.dto';
-import { applyDecorators, Type } from '@nestjs/common';
-import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
-import { StoreDto } from 'server/modules/store/dtos';
+import { PageDto } from "./../dtos/page.dto";
+import { applyDecorators, Type } from "@nestjs/common";
+import { ApiExtraModels, ApiOkResponse, getSchemaPath } from "@nestjs/swagger";
+import { WarehouseDto } from "core/dtos";
 
 export const ApiPaginatedResponse = <TModel extends Type<any>>(
   model: TModel,
 ) => {
   return applyDecorators(
-    ApiExtraModels(PageDto, StoreDto),
+    ApiExtraModels(PageDto, WarehouseDto),
     ApiOkResponse({
-      description: 'Successfully received model list',
+      description: "Successfully received model list",
       schema: {
         allOf: [
           { $ref: getSchemaPath(PageDto) },
           {
             properties: {
               data: {
-                type: 'array',
+                type: "array",
                 items: { $ref: getSchemaPath(model) },
               },
             },

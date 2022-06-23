@@ -20,7 +20,7 @@ export class Profile {
   avatar: string;
 
   @Prop()
-  roles: string;
+  roles: string[];
 }
 
 export const ProfileSchema = SchemaFactory.createForClass(Profile);

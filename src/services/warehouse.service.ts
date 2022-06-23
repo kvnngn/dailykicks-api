@@ -1,4 +1,4 @@
-import { CreateWarehouseDto } from "core/dtos";
+import { CreateWarehouseDto, UpdateWarehouseDto } from "core/dtos";
 import { Model } from "mongoose";
 import {
   PageDto,
@@ -7,7 +7,7 @@ import {
   WarehouseDto,
 } from "../core/dtos";
 import { Warehouse, WarehouseDocument } from "models";
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 
 @Injectable()
@@ -18,9 +18,9 @@ class WarehouseService {
   ) {}
 
   /**
-   * Create a profile with Create fields
-   * @param {Create} payload profile payload
-   * @returns {Promise<Profile>} created profile data
+   * Create a warehouse with Create fields
+   * @param {Create} payload warehouse payload
+   * @returns {Promise<Warehouse>} created warehouse data
    */
   async create(payload: CreateWarehouseDto) {
     const createdWarehouse = await this.warehouseModel.create(payload);
@@ -41,12 +41,38 @@ class WarehouseService {
       .sort(pageOptionsDto.sort)
       .skip(pageOptionsDto.skip)
       .limit(PAGE_SIZE)
-      .populate([{ path: "createdBy", model: "Profile" }]);
+      .populate([{ path: "createdBy", model: "Warehouse" }]);
 
     let itemCount = await this.warehouseModel.countDocuments();
     const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
 
     return new PageDto(entities, pageMetaDto);
+  }
+
+  /**
+   * Fetches a warehouse from database by id
+   * @param {string} id
+   * @returns {Promise<Warehouse>} queried warehouse data
+   */
+  getById(id: string) {
+    return this.warehouseModel.findOne({
+      _id: id,
+    });
+  }
+
+  async update(id: string, warehouseData: UpdateWarehouseDto) {
+    const warehouse = await this.warehouseModel
+      .findByIdAndUpdate({ _id: id }, warehouseData, { new: true })
+      .populate([{ path: "createdBy", model: "Profile" }]);
+    if (!warehouse) {
+      throw new NotFoundException();
+    }
+    return warehouse;
+  }
+
+  async delete(id: string) {
+    const warehouse = await this.warehouseModel.remove({ _id: id });
+    return warehouse;
   }
 }
 

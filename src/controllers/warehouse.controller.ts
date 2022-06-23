@@ -1,13 +1,24 @@
 import { AuthGuard } from "@nestjs/passport";
-import { Body, Controller, Post, Query, Get, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Post,
+  Query,
+  Get,
+  UseGuards,
+  Param,
+  BadRequestException,
+  Put,
+  Delete,
+} from "@nestjs/common";
 import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 import {
   CreateWarehouseDto,
   PageDto,
   PageOptionsDto,
+  UpdateWarehouseDto,
   WarehouseDto,
 } from "core/dtos";
-import { Warehouse } from "core/entities";
 import WarehouseService from "services/warehouse.service";
 
 /**
@@ -17,6 +28,7 @@ import WarehouseService from "services/warehouse.service";
 @ApiTags("warehouse")
 @Controller("api/warehouse")
 export class WarehouseController {
+  warehouseUseCases: any;
   /**
    * Constructor
    * @param WarehouseUseCases
@@ -41,6 +53,25 @@ export class WarehouseController {
   }
 
   /**
+   * Retrieves a particular warehouse
+   * @param id the warehouse given id to fetch
+   * @returns {Promise<IWarehouse>} queried warehouse data
+   */
+  @Get("/id/:id")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiResponse({ status: 200, description: "Fetch Warehouse Request Received" })
+  @ApiResponse({ status: 400, description: "Fetch Warehouse Request Failed" })
+  async getWarehouseById(@Param("id") id: string) {
+    const warehouse = await this.warehouseService.getById(id);
+    if (!warehouse) {
+      throw new BadRequestException(
+        "The warehouse with that id could not be found.",
+      );
+    }
+    return warehouse;
+  }
+
+  /**
    * Registration route to create and generate tokens for users
    * @param {CreateWarehouseDto} payload the registration dto
    */
@@ -52,44 +83,32 @@ export class WarehouseController {
     return this.warehouseService.create(payload);
   }
 
-  // /**
-  //  * Edit a warehouse
-  //  * @param {PatchWarehousePayload} payload
-  //  * @returns {Promise<Warehouse>} mutated warehouse data
-  //  */
-  // @Patch()
-  // @UseGuards(AuthGuard("jwt"))
-  // @UseRoles({
-  //   resource: "warehouses",
-  //   action: "update",
-  //   possession: "any",
-  // })
-  // @ApiResponse({ status: 200, description: "Patch Warehouse Request Received" })
-  // @ApiResponse({ status: 400, description: "Patch Warehouse Request Failed" })
-  // async patchWarehouse(@Body() payload: PatchWarehousePayload) {
-  //   return await this.warehouseUseCases.edit(payload);
-  // }
+  /**
+   * Edit a warehouse
+   * @param {UpdateWarehouseDto} payload
+   * @returns {Promise<Warehouse>} mutated warehouse data
+   */
+  @Put("/id/:id")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiResponse({ status: 200, description: "Put Warehouse Request Received" })
+  @ApiResponse({ status: 400, description: "Put Warehouse Request Failed" })
+  async update(@Param("id") id: string, @Body() payload: UpdateWarehouseDto) {
+    return await this.warehouseService.update(id, payload);
+  }
 
-  // /**
-  //  * Removes a warehouse from the database
-  //  * @param {string} username the username to remove
-  //  * @returns {Promise<IGenericMessageBody>} whether or not the warehouse has been deleted
-  //  */
-  // @Delete(":username")
-  // @UseGuards(AuthGuard("jwt"), ACGuard)
-  // @UseRoles({
-  //   resource: "warehouses",
-  //   action: "delete",
-  //   possession: "any",
-  // })
-  // @ApiResponse({
-  //   status: 200,
-  //   description: "Delete Warehouse Request Received",
-  // })
-  // @ApiResponse({ status: 400, description: "Delete Warehouse Request Failed" })
-  // async delete(
-  //   @Param("username") username: string,
-  // ): Promise<IGenericMessageBody> {
-  //   return await this.warehouseUseCases.delete(username);
-  // }
+  /**
+   * Removes a warehouse from the database
+   * @param {string} id the id to remove
+   * @returns {Promise<IGenericMessageBody>} whether or not the warehouse has been deleted
+   */
+  @Delete("/id/:id")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiResponse({
+    status: 200,
+    description: "Delete Warehouse Request Received",
+  })
+  @ApiResponse({ status: 400, description: "Delete Warehouse Request Failed" })
+  async delete(@Param("id") id: string) {
+    return await this.warehouseService.delete(id);
+  }
 }

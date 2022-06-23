@@ -80,9 +80,7 @@ class ProfileService {
    */
   getById(id: string) {
     return this.profileModel.findOne({
-      where: {
-        id: { $eq: id },
-      },
+      _id: id,
     });
   }
 
