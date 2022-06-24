@@ -66,11 +66,7 @@ class ProfileService {
    * @returns {Promise<Profile>} queried profile data
    */
   getByEmail(email: string) {
-    return this.profileModel.findOne({
-      where: {
-        email: { $eq: email },
-      },
-    });
+    return this.profileModel.findOne({ email: email });
   }
 
   /**
