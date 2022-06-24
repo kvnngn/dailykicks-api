@@ -8,7 +8,10 @@ import fastifyRateLimiter from "fastify-rate-limit";
 import * as fs from "fs";
 import { ValidationPipe } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import { ConfigService } from "@nestjs/config";
+
 import { AppModule } from "app.module";
+import { config } from "aws-sdk";
 
 /**
  * The url endpoint for open api ui
@@ -56,5 +59,11 @@ export const SWAGGER_API_CURRENT_VERSION = "1.0";
   });
   app.useGlobalPipes(new ValidationPipe());
 
+  const configService = app.get(ConfigService);
+  config.update({
+    accessKeyId: configService.get("AWS_ACCESS_KEY_ID"),
+    secretAccessKey: configService.get("AWS_SECRET_ACCESS_KEY"),
+    region: configService.get("AWS_REGION"),
+  });
   await app.listen(443, "0.0.0.0");
 })();

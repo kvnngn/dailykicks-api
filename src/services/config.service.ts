@@ -45,6 +45,10 @@ export class ConfigService {
       WEBTOKEN_SECRET_KEY: joi.string().required(),
       WEBTOKEN_EXPIRATION_TIME: joi.number().default(1800),
       DB_URL: joi.string().regex(/^mongodb/),
+      AWS_REGION: joi.string().required(),
+      AWS_ACCESS_KEY_ID: joi.string().required(),
+      AWS_SECRET_ACCESS_KEY: joi.string().required(),
+      AWS_PUBLIC_BUCKET_NAME: joi.string().required(),
     });
 
     /**

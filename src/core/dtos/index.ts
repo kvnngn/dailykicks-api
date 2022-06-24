@@ -4,3 +4,6 @@ export * from "./create-book-response.dto";
 export * from "./page-meta.dto";
 export * from "./page-options.dto";
 export * from "./page.dto";
+export * from "./brandModel.dto";
+export * from "./brand.dto";
+export * from "./product.dto";

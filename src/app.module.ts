@@ -20,6 +20,7 @@ import { ConfigService } from "services/config.service";
 import { WinstonModule } from "utils/winston/winston.module";
 import ProfileModule from "modules/profile.module";
 import WarehouseModule from "modules/warehouse.module";
+import ProductModule from "./modules/product.module";
 
 @Module({
   imports: [
@@ -80,6 +81,7 @@ import WarehouseModule from "modules/warehouse.module";
     AuthModule,
     ProfileModule,
     WarehouseModule,
+    ProductModule,
   ],
   controllers: [],
   providers: [AppService],
