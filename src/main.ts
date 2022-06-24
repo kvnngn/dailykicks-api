@@ -5,6 +5,7 @@ import {
 } from "@nestjs/platform-fastify";
 import headers from "fastify-helmet";
 import fastifyRateLimiter from "fastify-rate-limit";
+import * as fs from "fs";
 import { ValidationPipe } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { AppModule } from "app.module";
@@ -31,9 +32,13 @@ export const SWAGGER_API_DESCRIPTION = "API Description";
 export const SWAGGER_API_CURRENT_VERSION = "1.0";
 
 (async () => {
+  const httpsOptions = {
+    key: fs.readFileSync("./certs/privkey.pem"),
+    cert: fs.readFileSync("./certs/cert.pem"),
+  };
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({ logger: true }),
+    new FastifyAdapter({ logger: true, https: httpsOptions }),
   );
   const options = new DocumentBuilder()
     .setTitle(SWAGGER_API_NAME)
