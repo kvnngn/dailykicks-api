@@ -12,4 +12,4 @@ echo "Build your app"
 sudo npm run build
 
 echo "Run new PM2 action"
-sudo pm2 start ecosystem.json
+sudo pm2 start "npm run start" --name dailykicks-api 
