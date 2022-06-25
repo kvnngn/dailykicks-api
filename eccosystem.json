@@ -1,0 +1,16 @@
+{
+  "apps": [
+    {
+      "name": "dailykicks-api",
+      "script": "npm",
+      "args": "run start",
+      "watch": false,
+      "cwd": "/root/dailykicks-api",
+      "out_file": "/root/hooker.out.log",
+      "err_file": "/root/hooker.err.log",
+      "merge_logs": true,
+      "instances": 1,
+      "exec_mode": "cluster"
+    }
+  ]
+}
