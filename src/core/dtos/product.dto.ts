@@ -1,10 +1,4 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsDate,
-  IsArray,
-  IsNumber,
-} from "class-validator";
+import { IsString, IsNotEmpty, IsArray } from "class-validator";
 import { PartialType } from "@nestjs/mapped-types";
 import { ProfileDto } from "./profile.dto";
 import { BrandDto } from "./brand.dto";
@@ -12,20 +6,13 @@ import { BrandModelDto } from "./brandModel.dto";
 
 export class CreateProductDto {
   @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @IsArray()
-  images_url: string[];
+  image_url: string;
 
   @IsArray()
   colors: string[];
 
-  @IsNumber()
-  price: number;
-
   brand: BrandDto;
-  model: BrandModelDto;
+  brandModel: BrandModelDto;
   createdBy: ProfileDto;
 }
 

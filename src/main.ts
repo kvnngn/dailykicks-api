@@ -12,6 +12,7 @@ import { ConfigService } from "@nestjs/config";
 
 import { AppModule } from "app.module";
 import { config } from "aws-sdk";
+import { contentParser } from "fastify-file-interceptor";
 
 /**
  * The url endpoint for open api ui
@@ -39,10 +40,16 @@ export const SWAGGER_API_CURRENT_VERSION = "1.0";
     key: fs.readFileSync("./certs/privkey.pem"),
     cert: fs.readFileSync("./certs/cert.pem"),
   };
+
+  const fAdapt = new FastifyAdapter({ logger: true, https: httpsOptions });
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({ logger: true, https: httpsOptions }),
+    fAdapt,
   );
+
+  app.register(contentParser);
+
   const options = new DocumentBuilder()
     .setTitle(SWAGGER_API_NAME)
     .setDescription(SWAGGER_API_DESCRIPTION)

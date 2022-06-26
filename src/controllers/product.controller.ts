@@ -10,6 +10,8 @@ import {
   BadRequestException,
   Put,
   Delete,
+  UseInterceptors,
+  UploadedFile,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 import {
@@ -20,8 +22,12 @@ import {
   ProductDto,
 } from "core/dtos";
 import ProductService from "services/product.service";
-import BrandModelService from "../services/brandModel.service";
-import BrandService from "../services/brand.service";
+import {
+  AnyFilesFastifyInterceptor,
+  FileFastifyInterceptor,
+  FileFieldsFastifyInterceptor,
+  FilesFastifyInterceptor,
+} from "fastify-file-interceptor";
 
 /**
  * Product Controller
@@ -35,11 +41,7 @@ export class ProductController {
    * Constructor
    * @param ProductUseCases
    */
-  constructor(
-    private readonly productService: ProductService,
-    private readonly brandService: BrandService,
-    private readonly brandModelService: BrandModelService,
-  ) {}
+  constructor(private readonly productService: ProductService) {}
 
   /**
    * Retrieves a particular product
@@ -78,6 +80,32 @@ export class ProductController {
   }
 
   /**
+   * Retrieves a particular product
+   * @returns {Promise<IBrand[]>} queried product data
+   */
+  @Get("/brands")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiResponse({ status: 200, description: "Fetch Brands Request Received" })
+  @ApiResponse({ status: 400, description: "Fetch Brands Request Failed" })
+  async getBrands() {
+    const brands = await this.productService.getBrands();
+    return brands;
+  }
+
+  /**
+   * Retrieves a particular product
+   * @returns {Promise<IBrand[]>} queried product data
+   */
+  @Get("/brandModels")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiResponse({ status: 200, description: "Fetch Brands Request Received" })
+  @ApiResponse({ status: 400, description: "Fetch Brands Request Failed" })
+  async getBrandModels() {
+    const brands = await this.productService.getBrandModels();
+    return brands;
+  }
+
+  /**
    * Registration route to create and generate tokens for users
    * @param {CreateProductDto} payload the registration dto
    */
@@ -85,9 +113,15 @@ export class ProductController {
   @ApiResponse({ status: 200, description: "Product Creation Completed" })
   @ApiResponse({ status: 400, description: "Bad Request" })
   @ApiResponse({ status: 401, description: "Unauthorized" })
-  async add(@Body() payload: CreateProductDto): Promise<ProductDto> {
-    console.log(payload);
-    return this.productService.create(payload);
+  @UseInterceptors(FileFastifyInterceptor("image_url"))
+  async add(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() payload,
+  ): Promise<ProductDto> {
+    return this.productService.create(
+      { ...payload, colors: JSON.parse(payload.colors) },
+      file,
+    );
   }
 
   /**

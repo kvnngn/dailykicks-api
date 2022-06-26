@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import * as mongoose from "mongoose";
-import { Brand } from "./brandModel.model";
-import { BrandModel } from "./model.model";
+import { Brand } from "./brand.model";
+import { BrandModel } from "./brandModel.model";
 import { Profile } from "./profile.model";
 
 export type ProductDocument = Product & Document;
@@ -12,7 +12,7 @@ export class Product {
   name: string;
 
   @Prop()
-  image_urls: string[];
+  image_url: string;
 
   @Prop()
   colors: string[];
@@ -36,10 +36,10 @@ export class Product {
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Model",
+    ref: "BrandModel",
     required: true,
   })
-  model: BrandModel;
+  brandModel: BrandModel;
 
   @Prop({ default: new Date() })
   createdAt: Date;

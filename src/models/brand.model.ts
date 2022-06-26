@@ -1,12 +1,11 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import * as mongoose from "mongoose";
-import { Brand } from "./brandModel.model";
 import { Profile } from "./profile.model";
 
-export type BrandModelDocument = BrandModel & Document;
+export type BrandDocument = Brand & Document;
 
 @Schema()
-export class BrandModel {
+export class Brand {
   @Prop({ required: true, unique: true })
   name: string;
 
@@ -17,17 +16,10 @@ export class BrandModel {
   })
   createdBy: Profile;
 
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Brand",
-    required: true,
-  })
-  brand: Brand;
-
   @Prop({ default: new Date() })
   createdAt: Date;
   @Prop({ default: new Date() })
   updatedAt: Date;
 }
 
-export const BrandModelSchema = SchemaFactory.createForClass(BrandModel);
+export const BrandSchema = SchemaFactory.createForClass(Brand);

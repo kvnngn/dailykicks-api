@@ -1,3 +1,5 @@
+import { ConfigModule } from "modules/config.module";
+import { ConfigService } from "services/config.service";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ProductController } from "controllers";
@@ -9,21 +11,21 @@ import {
   Product,
   ProductSchema,
 } from "models";
-import BrandService from "../services/brand.service";
-import BrandModelService from "../services/brandModel.service";
+import { FilesService } from "../services/files.service";
 import ProductService from "../services/product.service";
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
-    MongooseModule.forFeature([{ name: Brand.name, schema: BrandSchema }]),
     MongooseModule.forFeature([
+      { name: Product.name, schema: ProductSchema },
+      { name: Brand.name, schema: BrandSchema },
       { name: BrandModel.name, schema: BrandModelSchema },
     ]),
+    ConfigModule,
   ],
   controllers: [ProductController],
-  providers: [ProductService, BrandService, BrandModelService],
-  exports: [ProductService, BrandService, BrandModelService],
+  providers: [ProductService, FilesService],
+  exports: [ProductService, FilesService],
 })
 class ProductModule {}
 

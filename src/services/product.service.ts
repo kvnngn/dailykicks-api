@@ -1,15 +1,28 @@
 import { CreateProductDto, UpdateProductDto } from "core/dtos";
 import { Model } from "mongoose";
 import { PageDto, PageMetaDto, PageOptionsDto, ProductDto } from "../core/dtos";
-import { Product, ProductDocument } from "models";
+import {
+  Brand,
+  BrandDocument,
+  BrandModel,
+  BrandModelDocument,
+  Product,
+  ProductDocument,
+} from "models";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import { FilesService } from "./files.service";
 
 @Injectable()
 class ProductService {
   constructor(
     @InjectModel(Product.name)
-    private warehouseModel: Model<ProductDocument>,
+    private productModel: Model<ProductDocument>,
+    @InjectModel(Brand.name)
+    private brandModel: Model<BrandDocument>,
+    @InjectModel(BrandModel.name)
+    private brandModelModel: Model<BrandModelDocument>,
+    private readonly filesService: FilesService,
   ) {}
 
   /**
@@ -17,8 +30,39 @@ class ProductService {
    * @param {Create} payload warehouse payload
    * @returns {Promise<Product>} created warehouse data
    */
-  async create(payload: CreateProductDto) {
-    const createdProduct = await this.warehouseModel.create(payload);
+  async create(payload: CreateProductDto, file: Express.Multer.File) {
+    const storedFile = await this.filesService.uploadPublicFile(
+      file.buffer,
+      `${file.originalname}`,
+    );
+    console.log({ storedFile });
+    let brand = await this.brandModel.findOne({
+      name: payload.brand,
+    });
+    if (!brand) {
+      brand = await this.brandModel.create({
+        name: payload.brand,
+        createdBy: payload.createdBy,
+      });
+    }
+    let brandModel = await this.brandModelModel.findOne({
+      name: payload.brandModel,
+      brand,
+    });
+    if (!brandModel) {
+      brandModel = await this.brandModelModel.create({
+        name: payload.brandModel,
+        createdBy: payload.createdBy,
+        brand,
+      });
+    }
+    let createdProduct = await this.productModel.create({
+      ...payload,
+      brand: brand._id,
+      brandModel: brandModel._id,
+      name: `${brand.name} - ${brandModel.name}`,
+      image_url: storedFile.url,
+    });
 
     return createdProduct;
   }
@@ -29,16 +73,19 @@ class ProductService {
     const PAGE_SIZE = pageOptionsDto.limit;
     const name = pageOptionsDto.searchQuery || ".";
 
-    let entities = await this.warehouseModel
+    let entities = await this.productModel
       .find({
         name: { $regex: new RegExp(name, "i") },
       })
       .sort(pageOptionsDto.sort)
       .skip(pageOptionsDto.skip)
       .limit(PAGE_SIZE)
-      .populate([{ path: "createdBy", model: "Profile" }]);
-
-    let itemCount = await this.warehouseModel.countDocuments();
+      .populate([
+        { path: "createdBy", model: "Profile" },
+        { path: "brand", model: "Brand" },
+        { path: "brandModel", model: "BrandModel" },
+      ]);
+    let itemCount = await this.productModel.countDocuments();
     const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
 
     return new PageDto(entities, pageMetaDto);
@@ -50,13 +97,29 @@ class ProductService {
    * @returns {Promise<Product>} queried warehouse data
    */
   getById(id: string) {
-    return this.warehouseModel.findOne({
+    return this.productModel.findOne({
       _id: id,
     });
   }
 
+  /**
+   * Fetches brands
+   * @returns {Promise<Brand>} queried Brand data
+   */
+  getBrands() {
+    return this.brandModel.find();
+  }
+
+  /**
+   * Fetches brands
+   * @returns {Promise<BrandModel>} queried BrandModel data
+   */
+  getBrandModels() {
+    return this.brandModelModel.find();
+  }
+
   async update(id: string, warehouseData: UpdateProductDto) {
-    const warehouse = await this.warehouseModel
+    const warehouse = await this.productModel
       .findByIdAndUpdate({ _id: id }, warehouseData, { new: true })
       .populate([{ path: "createdBy", model: "Profile" }]);
     if (!warehouse) {
@@ -66,7 +129,7 @@ class ProductService {
   }
 
   async delete(id: string) {
-    const warehouse = await this.warehouseModel.remove({ _id: id });
+    const warehouse = await this.productModel.remove({ _id: id });
     return warehouse;
   }
 }

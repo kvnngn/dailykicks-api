@@ -4,7 +4,7 @@ import { Profile } from "./profile.entity";
 
 export class Product {
   name: string;
-  images_url: string[];
+  image_url: string;
   colors: string[];
   price: number;
   brand: Brand;

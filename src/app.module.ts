@@ -13,7 +13,16 @@ import {
   WarehouseController,
 } from "controllers";
 import { Profile, Warehouse } from "core/entities";
-import { ProfileSchema, WarehouseSchema } from "models";
+import {
+  Brand,
+  BrandModel,
+  BrandModelSchema,
+  BrandSchema,
+  Product,
+  ProductSchema,
+  ProfileSchema,
+  WarehouseSchema,
+} from "models";
 import { AuthModule } from "modules/auth.module";
 import { ConfigModule } from "modules/config.module";
 import { ConfigService } from "services/config.service";
@@ -27,6 +36,9 @@ import ProductModule from "./modules/product.module";
     MongooseModule.forFeature([
       { name: Profile.name, schema: ProfileSchema },
       { name: Warehouse.name, schema: WarehouseSchema },
+      { name: Product.name, schema: ProductSchema },
+      { name: Brand.name, schema: BrandSchema },
+      { name: BrandModel.name, schema: BrandModelSchema },
     ]),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
