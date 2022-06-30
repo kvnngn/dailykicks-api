@@ -1,3 +1,4 @@
+import { IsString } from "class-validator";
 import { CreateProductDto, UpdateProductDto } from "core/dtos";
 import { Model } from "mongoose";
 import { PageDto, PageMetaDto, PageOptionsDto, ProductDto } from "../core/dtos";
@@ -12,6 +13,7 @@ import {
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { FilesService } from "./files.service";
+import _ from "lodash";
 
 @Injectable()
 class ProductService {
@@ -97,9 +99,15 @@ class ProductService {
    * @returns {Promise<Product>} queried warehouse data
    */
   getById(id: string) {
-    return this.productModel.findOne({
-      _id: id,
-    });
+    return this.productModel
+      .findOne({
+        _id: id,
+      })
+      .populate([
+        { path: "createdBy", model: "Profile" },
+        { path: "brand", model: "Brand" },
+        { path: "brandModel", model: "BrandModel" },
+      ]);
   }
 
   /**
@@ -118,14 +126,60 @@ class ProductService {
     return this.brandModelModel.find();
   }
 
-  async update(id: string, warehouseData: UpdateProductDto) {
-    const warehouse = await this.productModel
-      .findByIdAndUpdate({ _id: id }, warehouseData, { new: true })
+  async update(
+    id: string,
+    productData: UpdateProductDto,
+    file: Express.Multer.File,
+  ) {
+    let storedFile = null;
+    if (file && typeof file === "object") {
+      storedFile = await this.filesService.uploadPublicFile(
+        file.buffer,
+        `${file.originalname}`,
+      );
+    } else {
+      storedFile = productData.image_url;
+    }
+    let brand = await this.brandModel.findOne({
+      name: productData.brand,
+    });
+    if (!brand) {
+      brand = await this.brandModel.create({
+        name: productData.brand,
+      });
+    }
+    let brandModel = await this.brandModelModel.findOne({
+      name: productData.brandModel,
+    });
+    if (!brandModel) {
+      brandModel = await this.brandModelModel.create({
+        name: productData.brandModel,
+        createdBy: productData.createdBy,
+        brand,
+      });
+    }
+
+    const product = await this.productModel
+      .findByIdAndUpdate(
+        { _id: id },
+        {
+          brand: brand._id,
+          brandModel: brandModel._id,
+          image_url: storedFile
+            ? typeof storedFile === "object"
+              ? storedFile.url
+              : storedFile
+            : null,
+          name: `${brand.name} - ${brandModel.name}`,
+          colors: productData.colors,
+        },
+        { new: true },
+      )
       .populate([{ path: "createdBy", model: "Profile" }]);
-    if (!warehouse) {
+    if (!product) {
       throw new NotFoundException();
     }
-    return warehouse;
+    return product;
   }
 
   async delete(id: string) {

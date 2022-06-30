@@ -22,12 +22,7 @@ import {
   ProductDto,
 } from "core/dtos";
 import ProductService from "services/product.service";
-import {
-  AnyFilesFastifyInterceptor,
-  FileFastifyInterceptor,
-  FileFieldsFastifyInterceptor,
-  FilesFastifyInterceptor,
-} from "fastify-file-interceptor";
+import { FileFastifyInterceptor } from "fastify-file-interceptor";
 
 /**
  * Product Controller
@@ -76,6 +71,7 @@ export class ProductController {
         "The product with that id could not be found.",
       );
     }
+    console.log({ product });
     return product;
   }
 
@@ -133,8 +129,17 @@ export class ProductController {
   @UseGuards(AuthGuard("jwt"))
   @ApiResponse({ status: 200, description: "Put Product Request Received" })
   @ApiResponse({ status: 400, description: "Put Product Request Failed" })
-  async update(@Param("id") id: string, @Body() payload: UpdateProductDto) {
-    return await this.productService.update(id, payload);
+  @UseInterceptors(FileFastifyInterceptor("image_url"))
+  async update(
+    @Param("id") id: string,
+    @Body() payload,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.productService.update(
+      id,
+      { ...payload, colors: JSON.parse(payload.colors) },
+      file,
+    );
   }
 
   /**

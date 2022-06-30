@@ -5,12 +5,8 @@ import { BrandDto } from "./brand.dto";
 import { BrandModelDto } from "./brandModel.dto";
 
 export class CreateProductDto {
-  @IsString()
   image_url: string;
-
-  @IsArray()
   colors: string[];
-
   brand: BrandDto;
   brandModel: BrandModelDto;
   createdBy: ProfileDto;
