@@ -51,7 +51,6 @@ export class ProductController {
   async getStores(
     @Query() pageOptionsDto: PageOptionsDto,
   ): Promise<PageDto<ProductDto>> {
-    console.log({ pageOptionsDto });
     return await this.productService.get(pageOptionsDto);
   }
 

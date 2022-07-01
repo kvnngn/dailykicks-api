@@ -14,6 +14,8 @@ import {
 } from "controllers";
 import { Profile, Warehouse } from "core/entities";
 import {
+  Article,
+  ArticleSchema,
   Brand,
   BrandModel,
   BrandModelSchema,
@@ -30,6 +32,7 @@ import { WinstonModule } from "utils/winston/winston.module";
 import ProfileModule from "modules/profile.module";
 import WarehouseModule from "modules/warehouse.module";
 import ProductModule from "./modules/product.module";
+import ArticleModule from "./modules/article.module";
 
 @Module({
   imports: [
@@ -39,6 +42,7 @@ import ProductModule from "./modules/product.module";
       { name: Product.name, schema: ProductSchema },
       { name: Brand.name, schema: BrandSchema },
       { name: BrandModel.name, schema: BrandModelSchema },
+      { name: Article.name, schema: ArticleSchema },
     ]),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -94,6 +98,7 @@ import ProductModule from "./modules/product.module";
     ProfileModule,
     WarehouseModule,
     ProductModule,
+    ArticleModule,
   ],
   controllers: [],
   providers: [AppService],

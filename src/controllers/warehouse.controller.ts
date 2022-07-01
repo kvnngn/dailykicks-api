@@ -1,3 +1,4 @@
+import { ArticleDto } from "./../core/dtos/article.dto";
 import { AuthGuard } from "@nestjs/passport";
 import {
   Body,
@@ -20,6 +21,7 @@ import {
   WarehouseDto,
 } from "core/dtos";
 import WarehouseService from "services/warehouse.service";
+import ArticleService from "../services/article.service";
 
 /**
  * Warehouse Controller
@@ -33,7 +35,10 @@ export class WarehouseController {
    * Constructor
    * @param WarehouseUseCases
    */
-  constructor(private readonly warehouseService: WarehouseService) {}
+  constructor(
+    private readonly warehouseService: WarehouseService,
+    private readonly articleService: ArticleService,
+  ) {}
 
   /**
    * Retrieves a particular warehouse
@@ -50,6 +55,23 @@ export class WarehouseController {
   ): Promise<PageDto<WarehouseDto>> {
     console.log({ pageOptionsDto });
     return await this.warehouseService.get(pageOptionsDto);
+  }
+
+  /**
+   * Retrieves a particular product
+   * @param page specify the page you requested
+   * @param pageSize specify the page size you requested
+   * @returns {Promise<CCQueryResponse<Product>>} queried product data
+   */
+  @Get("/:id/articles")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiResponse({ status: 200, description: "Fetch Product Request Received" })
+  @ApiResponse({ status: 400, description: "Fetch Product Request Failed" })
+  async getWarehouseArticles(
+    @Query() pageOptionsDto: PageOptionsDto,
+    @Param("id") id: string,
+  ): Promise<PageDto<ArticleDto>> {
+    return await this.articleService.get(pageOptionsDto, id);
   }
 
   /**
