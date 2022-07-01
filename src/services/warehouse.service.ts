@@ -29,19 +29,45 @@ class WarehouseService {
   }
 
   async get(pageOptionsDto: PageOptionsDto): Promise<PageDto<WarehouseDto>> {
-    console.log({ pageOptionsDto });
+    console.log("test", { pageOptionsDto });
 
     const PAGE_SIZE = pageOptionsDto.limit;
     const name = pageOptionsDto.searchQuery || ".";
 
-    let entities = await this.warehouseModel
-      .find({
-        name: { $regex: new RegExp(name, "i") },
-      })
-      .sort(pageOptionsDto.sort)
-      .skip(pageOptionsDto.skip)
-      .limit(PAGE_SIZE)
-      .populate([{ path: "createdBy", model: "Warehouse" }]);
+    let entities = await this.warehouseModel.aggregate([
+      {
+        $match: {
+          name: { $regex: new RegExp(name, "i") },
+        },
+      },
+      // { $sort: pageOptionsDto.sort },
+      {
+        $lookup: {
+          from: "articles",
+          localField: "_id",
+          foreignField: "warehouse",
+          as: "articles",
+        },
+      },
+      {
+        $project: {
+          createdAt: 1,
+          createdBy: 1,
+          name: 1,
+          updatedAt: 1,
+          articles: { $size: "$articles" },
+        },
+      },
+      { $limit: 10 },
+      { $skip: 0 },
+    ]);
+    // .find({
+    //   name: { $regex: new RegExp(name, "i") },
+    // })
+    // .sort(pageOptionsDto.sort)
+    // .skip(pageOptionsDto.skip)
+    // .limit(PAGE_SIZE)
+    // .populate([{ path: "createdBy", model: "Warehouse" }]);
 
     let itemCount = await this.warehouseModel.countDocuments();
     const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });

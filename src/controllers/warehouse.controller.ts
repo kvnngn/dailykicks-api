@@ -53,7 +53,6 @@ export class WarehouseController {
   async getStores(
     @Query() pageOptionsDto: PageOptionsDto,
   ): Promise<PageDto<WarehouseDto>> {
-    console.log({ pageOptionsDto });
     return await this.warehouseService.get(pageOptionsDto);
   }
 

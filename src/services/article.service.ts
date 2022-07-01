@@ -19,6 +19,7 @@ class ArticleService {
    * @returns {Promise<Article>} created warehouse data
    */
   async create(payload: CreateArticleDto) {
+    console.log({ payload });
     let createdArticle = await this.articleModel.create({
       ...payload,
     });

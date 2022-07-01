@@ -29,16 +29,16 @@ export class Article {
   })
   warehouse: Warehouse;
 
-  @Prop()
+  @Prop({ default: false })
   sold: boolean;
 
-  @Prop()
+  @Prop({ default: null })
   soldAt: Date;
 
-  @Prop()
+  @Prop({ default: null })
   transferedAt: Date;
 
-  @Prop()
+  @Prop({ default: false })
   transfered: Boolean;
 
   @Prop()

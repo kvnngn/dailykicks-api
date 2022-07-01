@@ -5,9 +5,9 @@ import { ProfileDto } from "./profile.dto";
 import { WarehouseDto } from "./warehouse.dto";
 
 export class CreateArticleDto {
-  createdBy: ProfileDto;
-  product: ProductDto;
-  warehouse: WarehouseDto;
+  createdBy: string;
+  product: string;
+  warehouse: string;
   sold: boolean;
   soldAt: Date;
   transferedAt: Date;
