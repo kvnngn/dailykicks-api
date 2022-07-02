@@ -36,20 +36,32 @@ export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   /**
-   * Retrieves a particular product
+   * Retrieves articles from specific warehouse
    * @param page specify the page you requested
    * @param pageSize specify the page size you requested
-   * @returns {Promise<CCQueryResponse<Product>>} queried product data
+   * @returns {Promise<CCQueryResponse<Article>>} queried article data
    */
   @Get("/:id")
   @UseGuards(AuthGuard("jwt"))
-  @ApiResponse({ status: 200, description: "Fetch Product Request Received" })
-  @ApiResponse({ status: 400, description: "Fetch Product Request Failed" })
-  async getArticleArticles(
+  @ApiResponse({ status: 200, description: "Fetch Article Request Received" })
+  @ApiResponse({ status: 400, description: "Fetch Article Request Failed" })
+  async getWarehouseArticles(
     @Query() pageOptionsDto: PageOptionsDto,
-    @Param("id") id: string,
+    @Param("id") warehouseId: string,
   ): Promise<PageDto<ArticleDto>> {
-    return await this.articleService.get(pageOptionsDto, id);
+    return await this.articleService.get(pageOptionsDto, warehouseId);
+  }
+
+  /**
+   * Retrieves a particular article
+   * @returns {Promise<Article>} queried article data
+   */
+  @Get("/id/:id")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiResponse({ status: 200, description: "Fetch Article Request Received" })
+  @ApiResponse({ status: 400, description: "Fetch Article Request Failed" })
+  async getArticleById(@Param("id") articleId: string): Promise<ArticleDto> {
+    return await this.articleService.getById(articleId);
   }
 
   /**

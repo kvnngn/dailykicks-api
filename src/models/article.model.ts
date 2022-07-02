@@ -47,6 +47,9 @@ export class Article {
   @Prop()
   shopPrice: number;
 
+  @Prop()
+  size: number;
+
   @Prop({ unique: true })
   sku: string;
 

@@ -132,7 +132,7 @@ class ProductService {
     file: Express.Multer.File,
   ) {
     let storedFile = null;
-    if (file && typeof file === "object") {
+    if (file && typeof file === "object" && file.buffer) {
       storedFile = await this.filesService.uploadPublicFile(
         file.buffer,
         `${file.originalname}`,

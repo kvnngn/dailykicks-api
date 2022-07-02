@@ -13,6 +13,7 @@ export class CreateArticleDto {
   transferedAt: Date;
   transfered: Boolean;
   storehousePrice: number;
+  size: number;
   shopPrice: number;
   sku: string;
   createdAt: Date;
@@ -53,6 +54,9 @@ export class ArticleDto {
 
   @IsNumber()
   shopPrice: number;
+
+  @IsNumber()
+  size: number;
 }
 
 export class UpdateArticleDto extends PartialType(CreateArticleDto) {}
