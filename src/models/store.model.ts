@@ -2,24 +2,12 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import * as mongoose from "mongoose";
 import { Profile } from "./profile.model";
 
-// export enum WarehouseType {
-//   Storehouse,
-//   Store,
-// }
-
-export type WarehouseDocument = Warehouse & Document;
+export type StoreDocument = Store & Document;
 
 @Schema()
-export class Warehouse {
+export class Store {
   @Prop({ required: true, unique: true })
   name: string;
-
-  // @Prop({
-  //   type: String,
-  //   enum: WarehouseType,
-  //   default: WarehouseType.Storehouse,
-  // })
-  // type: WarehouseType;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
@@ -34,4 +22,4 @@ export class Warehouse {
   updatedAt: Date;
 }
 
-export const WarehouseSchema = SchemaFactory.createForClass(Warehouse);
+export const StoreSchema = SchemaFactory.createForClass(Store);

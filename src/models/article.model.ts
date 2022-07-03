@@ -3,6 +3,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import * as mongoose from "mongoose";
 import { Profile } from "./profile.model";
 import { Warehouse } from "../core";
+import { Store } from "./store.model";
 
 export type ArticleDocument = Article & Document;
 
@@ -25,9 +26,14 @@ export class Article {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Warehouse",
-    required: true,
   })
   warehouse: Warehouse;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
+  })
+  store: Store;
 
   @Prop({ default: false })
   sold: boolean;
@@ -42,10 +48,10 @@ export class Article {
   transfered: Boolean;
 
   @Prop()
-  storehousePrice: number;
+  warehousePrice: number;
 
   @Prop()
-  shopPrice: number;
+  storePrice: number;
 
   @Prop()
   size: number;

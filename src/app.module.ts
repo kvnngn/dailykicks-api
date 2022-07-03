@@ -23,6 +23,8 @@ import {
   Product,
   ProductSchema,
   ProfileSchema,
+  Store,
+  StoreSchema,
   WarehouseSchema,
 } from "models";
 import { AuthModule } from "modules/auth.module";
@@ -33,6 +35,7 @@ import ProfileModule from "modules/profile.module";
 import WarehouseModule from "modules/warehouse.module";
 import ProductModule from "./modules/product.module";
 import ArticleModule from "./modules/article.module";
+import StoreModule from "./modules/store.module";
 
 @Module({
   imports: [
@@ -43,6 +46,7 @@ import ArticleModule from "./modules/article.module";
       { name: Brand.name, schema: BrandSchema },
       { name: BrandModel.name, schema: BrandModelSchema },
       { name: Article.name, schema: ArticleSchema },
+      { name: Store.name, schema: StoreSchema },
     ]),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -97,6 +101,7 @@ import ArticleModule from "./modules/article.module";
     AuthModule,
     ProfileModule,
     WarehouseModule,
+    StoreModule,
     ProductModule,
     ArticleModule,
   ],

@@ -3,18 +3,20 @@ import { IsString, IsNotEmpty, IsBoolean, IsNumber } from "class-validator";
 import { PartialType } from "@nestjs/mapped-types";
 import { ProfileDto } from "./profile.dto";
 import { WarehouseDto } from "./warehouse.dto";
+import { StoreDto } from "./store.dto";
 
 export class CreateArticleDto {
   createdBy: string;
   product: string;
   warehouse: string;
+  store: string;
   sold: boolean;
   soldAt: Date;
   transferedAt: Date;
   transfered: Boolean;
-  storehousePrice: number;
+  warehousePrice: number;
   size: number;
-  shopPrice: number;
+  storePrice: number;
   sku: string;
   createdAt: Date;
   updatedAt: Date;
@@ -35,6 +37,10 @@ export class ArticleDto {
 
   @IsString()
   @IsNotEmpty()
+  store: StoreDto;
+
+  @IsString()
+  @IsNotEmpty()
   sku: string;
 
   @IsBoolean()
@@ -50,10 +56,10 @@ export class ArticleDto {
   transfered: Boolean;
 
   @IsNumber()
-  storehousePrice: number;
+  warehousePrice: number;
 
   @IsNumber()
-  shopPrice: number;
+  storePrice: number;
 
   @IsNumber()
   size: number;

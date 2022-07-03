@@ -49,7 +49,10 @@ class ArticleService {
     pipeline.push(
       {
         $match: {
-          warehouse: new Types.ObjectId(warehouseId),
+          $or: [
+            { warehouse: new Types.ObjectId(warehouseId) },
+            { store: new Types.ObjectId(warehouseId) },
+          ],
         },
       },
       {
