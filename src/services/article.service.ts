@@ -42,7 +42,6 @@ class ArticleService {
     pageOptionsDto: PageOptionsDto,
     warehouseId: string,
   ): Promise<PageDto<ArticleDto>> {
-    console.log({ pageOptionsDto });
     const filters = pageOptionsDto.filter;
     let pipeline = [];
 
@@ -69,11 +68,11 @@ class ArticleService {
     // match filters
     if (filters) {
       const parsedFilter = JSON.parse(filters);
-      if (parsedFilter.Brand) {
+      if (parsedFilter.brands) {
         const brands = (
           await this.brandModel.find(
             {
-              name: { $in: parsedFilter.Brand ? parsedFilter.Brand : [] },
+              name: { $in: parsedFilter.brands ? parsedFilter.brands : [] },
             },
             { _id: 1 },
           )
@@ -83,12 +82,12 @@ class ArticleService {
           $match: { "product.brand": { $in: brands } },
         });
       }
-      if (parsedFilter.BrandModel) {
+      if (parsedFilter.brandModels) {
         const brandModels = (
           await this.brandModelModel.find(
             {
               name: {
-                $in: parsedFilter.BrandModel ? parsedFilter.BrandModel : [],
+                $in: parsedFilter.brandModels ? parsedFilter.brandModels : [],
               },
             },
             { _id: 1 },
@@ -109,10 +108,9 @@ class ArticleService {
 
     // add sort
     if (pageOptionsDto.sort) {
-      pipeline.push({ $sort: pageOptionsDto.sort });
+      pipeline.push({ $sort: JSON.parse(pageOptionsDto.sort) });
     }
 
-    console.log(pipeline);
     let entities = await this.articleModel.aggregate(pipeline);
     let itemCount = await this.articleModel.countDocuments();
     const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
