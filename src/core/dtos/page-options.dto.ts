@@ -22,6 +22,11 @@ export class PageOptionsDto {
   @IsOptional()
   readonly sort: string;
 
+  @Type(() => String)
+  @IsString()
+  @IsOptional()
+  readonly filter: string;
+
   @Type(() => Number)
   @IsInt()
   @IsOptional()

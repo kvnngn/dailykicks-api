@@ -14,6 +14,8 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 import {
+  BrandDto,
+  BrandModelDto,
   CreateArticleDto,
   PageDto,
   PageOptionsDto,
@@ -45,11 +47,29 @@ export class ArticleController {
   @UseGuards(AuthGuard("jwt"))
   @ApiResponse({ status: 200, description: "Fetch Article Request Received" })
   @ApiResponse({ status: 400, description: "Fetch Article Request Failed" })
-  async getWarehouseArticles(
+  async getArticles(
     @Query() pageOptionsDto: PageOptionsDto,
     @Param("id") warehouseId: string,
   ): Promise<PageDto<ArticleDto>> {
     return await this.articleService.get(pageOptionsDto, warehouseId);
+  }
+
+  /**
+   * Retrieves articles from specific warehouse
+   * @param page specify the page you requested
+   * @param pageSize specify the page size you requested
+   * @returns {Promise<{ brands: BrandDto[]; brandModels: BrandModelDto[]}>}
+   * queried article data
+   */
+  @Get("/acdata")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiResponse({ status: 200, description: "Fetch Article Request Received" })
+  @ApiResponse({ status: 400, description: "Fetch Article Request Failed" })
+  async getArticleAutocomplete(): Promise<{
+    brands: string[];
+    brandModels: string[];
+  }> {
+    return await this.articleService.getAcdata();
   }
 
   /**

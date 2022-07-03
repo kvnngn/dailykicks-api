@@ -1,7 +1,14 @@
 import { CreateArticleDto, UpdateArticleDto } from "core/dtos";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { PageDto, PageMetaDto, PageOptionsDto, ArticleDto } from "../core/dtos";
-import { Article, ArticleDocument } from "models";
+import {
+  Article,
+  ArticleDocument,
+  Brand,
+  BrandDocument,
+  BrandModel,
+  BrandModelDocument,
+} from "models";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import _ from "lodash";
@@ -11,6 +18,10 @@ class ArticleService {
   constructor(
     @InjectModel(Article.name)
     private articleModel: Model<ArticleDocument>,
+    @InjectModel(Brand.name)
+    private brandModel: Model<BrandDocument>,
+    @InjectModel(BrandModel.name)
+    private brandModelModel: Model<BrandModelDocument>,
   ) {}
 
   /**
@@ -31,25 +42,95 @@ class ArticleService {
     pageOptionsDto: PageOptionsDto,
     warehouseId: string,
   ): Promise<PageDto<ArticleDto>> {
-    const PAGE_SIZE = pageOptionsDto.limit;
-    const name = pageOptionsDto.searchQuery || ".";
+    console.log({ pageOptionsDto });
+    const filters = pageOptionsDto.filter;
+    let pipeline = [];
 
-    let entities = await this.articleModel
-      .find({
-        name: { $regex: new RegExp(name, "i") },
-        warehouse: warehouseId,
-      })
-      .sort(pageOptionsDto.sort)
-      .skip(pageOptionsDto.skip)
-      .limit(PAGE_SIZE)
-      .populate([
-        { path: "createdBy", model: "Profile" },
-        { path: "product", model: "Product" },
-      ]);
+    // match warehouse and populate references
+    pipeline.push(
+      {
+        $match: {
+          warehouse: new Types.ObjectId(warehouseId),
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "product",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      {
+        $unwind: "$product",
+      },
+    );
+
+    // match filters
+    if (filters) {
+      const parsedFilter = JSON.parse(filters);
+      if (parsedFilter.Brand) {
+        const brands = (
+          await this.brandModel.find(
+            {
+              name: { $in: parsedFilter.Brand ? parsedFilter.Brand : [] },
+            },
+            { _id: 1 },
+          )
+        ).map((item) => item._id);
+
+        pipeline.push({
+          $match: { "product.brand": { $in: brands } },
+        });
+      }
+      if (parsedFilter.BrandModel) {
+        const brandModels = (
+          await this.brandModelModel.find(
+            {
+              name: {
+                $in: parsedFilter.BrandModel ? parsedFilter.BrandModel : [],
+              },
+            },
+            { _id: 1 },
+          )
+        ).map((item) => item._id);
+
+        pipeline.push({
+          $match: { "product.brandModel": { $in: brandModels } },
+        });
+      }
+    }
+
+    // add pagination, limit, sort
+    pipeline.push(
+      { $limit: Number(pageOptionsDto.limit) },
+      { $skip: Number(pageOptionsDto.skip) },
+    );
+
+    // add sort
+    if (pageOptionsDto.sort) {
+      pipeline.push({ $sort: pageOptionsDto.sort });
+    }
+
+    console.log(pipeline);
+    let entities = await this.articleModel.aggregate(pipeline);
     let itemCount = await this.articleModel.countDocuments();
     const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
 
     return new PageDto(entities, pageMetaDto);
+  }
+
+  async getAcdata(): Promise<{
+    brands: string[];
+    brandModels: string[];
+  }> {
+    const brands = await (
+      await this.brandModel.find({}, { name: 1, _id: 0 })
+    ).map((item) => item.name);
+    const brandModels = (
+      await this.brandModelModel.find({}, { name: 1, _id: 0 })
+    ).map((item) => item.name);
+    return { brands, brandModels };
   }
 
   /**
