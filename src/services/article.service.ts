@@ -1,4 +1,8 @@
-import { CreateArticleDto, UpdateArticleDto } from "core/dtos";
+import {
+  CreateArticleDto,
+  TransferArticleDto,
+  UpdateArticleDto,
+} from "core/dtos";
 import { Model, Types } from "mongoose";
 import { PageDto, PageMetaDto, PageOptionsDto, ArticleDto } from "../core/dtos";
 import {
@@ -65,6 +69,17 @@ class ArticleService {
       },
       {
         $unwind: "$product",
+      },
+      {
+        $lookup: {
+          from: "stores",
+          localField: "store",
+          foreignField: "_id",
+          as: "store",
+        },
+      },
+      {
+        $unwind: "$store",
       },
     );
 
@@ -168,6 +183,20 @@ class ArticleService {
   async delete(id: string) {
     const warehouse = await this.articleModel.remove({ _id: id });
     return warehouse;
+  }
+
+  async transfer(id: string, articleData: TransferArticleDto) {
+    const article = await this.articleModel
+      .findByIdAndUpdate(
+        { _id: id },
+        { ...articleData, transferedAt: new Date() },
+        { new: true },
+      )
+      .populate([{ path: "createdBy", model: "Profile" }]);
+    if (!article) {
+      throw new NotFoundException();
+    }
+    return article;
   }
 }
 

@@ -1,19 +1,27 @@
 import { ProductDto } from "./product.dto";
-import { IsString, IsNotEmpty, IsBoolean, IsNumber } from "class-validator";
+import {
+  IsString,
+  IsNotEmpty,
+  IsBoolean,
+  IsNumber,
+  IsAlphanumeric,
+  IsEmail,
+  Matches,
+  MinLength,
+} from "class-validator";
 import { PartialType } from "@nestjs/mapped-types";
 import { ProfileDto } from "./profile.dto";
 import { WarehouseDto } from "./warehouse.dto";
 import { StoreDto } from "./store.dto";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateArticleDto {
   createdBy: string;
   product: string;
   warehouse: string;
   store: string;
-  sold: boolean;
   soldAt: Date;
   transferedAt: Date;
-  transfered: Boolean;
   warehousePrice: number;
   size: number;
   storePrice: number;
@@ -43,17 +51,11 @@ export class ArticleDto {
   @IsNotEmpty()
   sku: string;
 
-  @IsBoolean()
-  sold: boolean;
-
   @IsString()
   soldAt: Date;
 
   @IsString()
   transferedAt: Date;
-
-  @IsBoolean()
-  transfered: Boolean;
 
   @IsNumber()
   warehousePrice: number;
@@ -66,3 +68,31 @@ export class ArticleDto {
 }
 
 export class UpdateArticleDto extends PartialType(CreateArticleDto) {}
+
+export class TransferArticleDto {
+  @ApiProperty({
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  store: string;
+
+  /**
+   * Firstname field
+   */
+  @ApiProperty({
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  updatedBy: string;
+
+  /**
+   * Lastname field
+   */
+  @ApiProperty({
+    required: true,
+  })
+  @IsNumber()
+  transferPrice: number;
+}

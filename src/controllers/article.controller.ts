@@ -1,4 +1,4 @@
-import { ArticleDto } from "../core/dtos/article.dto";
+import { ArticleDto, TransferArticleDto } from "../core/dtos/article.dto";
 import { AuthGuard } from "@nestjs/passport";
 import {
   Body,
@@ -107,6 +107,19 @@ export class ArticleController {
   @ApiResponse({ status: 400, description: "Put Article Request Failed" })
   async update(@Param("id") id: string, @Body() payload: UpdateArticleDto) {
     return await this.articleService.update(id, payload);
+  }
+
+  /**
+   * Edit a article
+   * @param {TransferArticleDto} payload
+   * @returns {Promise<Article>} mutated article data
+   */
+  @Put("/transfer/:id")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiResponse({ status: 200, description: "Put Article Request Received" })
+  @ApiResponse({ status: 400, description: "Put Article Request Failed" })
+  async transfer(@Param("id") id: string, @Body() payload: TransferArticleDto) {
+    return await this.articleService.transfer(id, payload);
   }
 
   /**

@@ -35,20 +35,17 @@ export class Article {
   })
   store: Store;
 
-  @Prop({ default: false })
-  sold: boolean;
-
   @Prop({ default: null })
   soldAt: Date;
 
   @Prop({ default: null })
   transferedAt: Date;
 
-  @Prop({ default: false })
-  transfered: Boolean;
-
   @Prop()
   warehousePrice: number;
+
+  @Prop()
+  transferPrice: number;
 
   @Prop()
   storePrice: number;

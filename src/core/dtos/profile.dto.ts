@@ -8,7 +8,6 @@ import {
   IsAlphanumeric,
   Matches,
   IsString,
-  IsDate,
 } from "class-validator";
 
 export class CreateProfileDto {
