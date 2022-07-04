@@ -1,5 +1,6 @@
 import {
   CreateArticleDto,
+  SellArticleDto,
   TransferArticleDto,
   UpdateArticleDto,
 } from "core/dtos";
@@ -351,6 +352,20 @@ class ArticleService {
       .findByIdAndUpdate(
         { _id: id },
         { ...articleData, transferedAt: new Date() },
+        { new: true },
+      )
+      .populate([{ path: "createdBy", model: "Profile" }]);
+    if (!article) {
+      throw new NotFoundException();
+    }
+    return article;
+  }
+
+  async sell(id: string, articleData: SellArticleDto) {
+    const article = await this.articleModel
+      .findByIdAndUpdate(
+        { _id: id },
+        { ...articleData, soldAt: new Date() },
         { new: true },
       )
       .populate([{ path: "createdBy", model: "Profile" }]);

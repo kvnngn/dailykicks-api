@@ -77,9 +77,6 @@ export class TransferArticleDto {
   @IsNotEmpty()
   store: string;
 
-  /**
-   * Firstname field
-   */
   @ApiProperty({
     required: true,
   })
@@ -87,12 +84,24 @@ export class TransferArticleDto {
   @IsNotEmpty()
   updatedBy: string;
 
-  /**
-   * Lastname field
-   */
   @ApiProperty({
     required: true,
   })
   @IsNumber()
   transferPrice: number;
+}
+
+export class SellArticleDto {
+  @ApiProperty({
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  updatedBy: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsNumber()
+  sellingPrice: number;
 }

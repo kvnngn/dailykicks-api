@@ -52,6 +52,9 @@ export class Article {
   storePrice: number;
 
   @Prop()
+  sellingPrice: number;
+
+  @Prop()
   size: number;
 
   @Prop({ unique: true })
