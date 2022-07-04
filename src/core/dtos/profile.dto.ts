@@ -1,3 +1,4 @@
+import { StoreDto } from "./store.dto";
 import { PartialType } from "@nestjs/mapped-types";
 import { ApiProperty } from "@nestjs/swagger";
 import {
@@ -6,6 +7,8 @@ import {
   MinLength,
   IsAlphanumeric,
   Matches,
+  IsString,
+  IsDate,
 } from "class-validator";
 
 export class CreateProfileDto {
@@ -48,6 +51,15 @@ export class CreateProfileDto {
   @IsNotEmpty()
   @MinLength(8)
   password: string;
+
+  /**
+   * Store field
+   */
+  @ApiProperty({
+    required: false,
+  })
+  @IsString()
+  store: StoreDto;
 }
 
 export class ProfileDto {

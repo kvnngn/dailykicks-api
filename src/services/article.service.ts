@@ -101,6 +101,11 @@ class ArticleService {
           $match: { "product.brandModel": { $in: brandModels } },
         });
       }
+      if (parsedFilter.sku) {
+        pipeline.push({
+          $match: { sku: parsedFilter.sku },
+        });
+      }
     }
 
     // add pagination, limit, sort

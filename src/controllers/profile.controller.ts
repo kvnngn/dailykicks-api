@@ -1,13 +1,27 @@
 import {
   BadRequestException,
+  Body,
   Controller,
+  Delete,
   Get,
   Param,
+  Patch,
+  Post,
+  Put,
+  Query,
   UseGuards,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 import ProfileService from "services/profile.service";
+import {
+  PageOptionsDto,
+  PageDto,
+  ProfileDto,
+  UpdateProfileDto,
+  CreateProfileDto,
+} from "../core/dtos";
+import { UseRoles } from "nest-access-control";
 
 /**
  * Profile Controller
@@ -61,41 +75,62 @@ export class ProfileController {
     return profile;
   }
 
-  // /**
-  //  * Edit a profile
-  //  * @param {RegisterPayload} payload
-  //  * @returns {Promise<IProfile>} mutated profile data
-  //  */
-  // @Patch()
-  // @UseGuards(AuthGuard("jwt"))
-  // @UseRoles({
-  //   resource: "profiles",
-  //   action: "update",
-  //   possession: "any",
-  // })
-  // @ApiResponse({ status: 200, description: "Patch Profile Request Received" })
-  // @ApiResponse({ status: 400, description: "Patch Profile Request Failed" })
-  // async patchProfile(@Body() payload: PatchProfilePayload) {
-  //   return await this.ProfileService.edit(payload);
-  // }
+  /**
+   * Retrieves a particular profile
+   * @param id the profile given id to fetch
+   * @returns {Promise<IProfile>} queried profile data
+   */
+  @Get("/store/:id")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiResponse({ status: 200, description: "Fetch Profile Request Received" })
+  @ApiResponse({ status: 400, description: "Fetch Profile Request Failed" })
+  async getUserByStore(
+    @Query() pageOptionsDto: PageOptionsDto,
+    @Param("id") storeId: string,
+  ): Promise<PageDto<ProfileDto>> {
+    console.log(pageOptionsDto);
+    console.log(storeId);
+    return await this.profileService.getByStore(pageOptionsDto, storeId);
+  }
 
-  // /**
-  //  * Removes a profile from the database
-  //  * @param {string} username the username to remove
-  //  * @returns {Promise<IGenericMessageBody>} whether or not the profile has been deleted
-  //  */
-  // @Delete(":username")
-  // @UseGuards(AuthGuard("jwt"), ACGuard)
-  // @UseRoles({
-  //   resource: "profiles",
-  //   action: "delete",
-  //   possession: "any",
-  // })
-  // @ApiResponse({ status: 200, description: "Delete Profile Request Received" })
-  // @ApiResponse({ status: 400, description: "Delete Profile Request Failed" })
-  // async delete(
-  //   @Param("username") username: string,
-  // ): Promise<IGenericMessageBody> {
-  //   return await this.ProfileService.delete(username);
-  // }
+  /**
+   * Registration route to create and generate tokens for users
+   * @param {CreateProfileDto} payload the registration dto
+   */
+  @Post()
+  @ApiResponse({ status: 200, description: "Profile Creation Completed" })
+  @ApiResponse({ status: 400, description: "Bad Request" })
+  @ApiResponse({ status: 401, description: "Unauthorized" })
+  async add(@Body() payload: CreateProfileDto): Promise<ProfileDto> {
+    return this.profileService.createUser(payload);
+  }
+
+  /**
+   * Edit a Profile
+   * @param {UpdateProfileDto} payload
+   * @returns {Promise<Profile>} mutated Profile data
+   */
+  @Put("/id/:id")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiResponse({ status: 200, description: "Put Profile Request Received" })
+  @ApiResponse({ status: 400, description: "Put Profile Request Failed" })
+  async update(@Param("id") id: string, @Body() payload: UpdateProfileDto) {
+    return await this.profileService.updateProfile(id, payload);
+  }
+
+  /**
+   * Removes a profile from the database
+   * @param {string} id the id to remove
+   * @returns {Promise<IGenericMessageBody>} whether or not the profile has been deleted
+   */
+  @Delete("/id/:id")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiResponse({
+    status: 200,
+    description: "Delete profile Request Received",
+  })
+  @ApiResponse({ status: 400, description: "Delete profile Request Failed" })
+  async delete(@Param("id") id: string) {
+    return await this.profileService.delete(id);
+  }
 }
