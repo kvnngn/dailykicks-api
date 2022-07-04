@@ -14,8 +14,6 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 import {
-  BrandDto,
-  BrandModelDto,
   CreateArticleDto,
   PageDto,
   PageOptionsDto,

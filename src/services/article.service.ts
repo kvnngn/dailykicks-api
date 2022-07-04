@@ -46,6 +46,8 @@ class ArticleService {
     pageOptionsDto: PageOptionsDto,
     warehouseId: string,
   ): Promise<PageDto<ArticleDto>> {
+    console.log(pageOptionsDto);
+    console.log(warehouseId);
     const filters = pageOptionsDto.filter;
     let pipeline = [];
 
@@ -68,7 +70,10 @@ class ArticleService {
         },
       },
       {
-        $unwind: "$product",
+        $unwind: {
+          path: "$product",
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $lookup: {
@@ -79,7 +84,10 @@ class ArticleService {
         },
       },
       {
-        $unwind: "$store",
+        $unwind: {
+          path: "$store",
+          preserveNullAndEmptyArrays: true,
+        },
       },
     );
 
@@ -134,6 +142,7 @@ class ArticleService {
       pipeline.push({ $sort: JSON.parse(pageOptionsDto.sort) });
     }
 
+    console.log(pipeline);
     let entities = await this.articleModel.aggregate(pipeline);
     let itemCount = await this.articleModel.countDocuments();
     const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });

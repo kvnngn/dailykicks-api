@@ -32,6 +32,7 @@ export class Article {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Store",
+    default: null,
   })
   store: Store;
 
