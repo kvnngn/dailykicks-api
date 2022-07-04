@@ -57,7 +57,6 @@ export class CreateProfileDto {
   @ApiProperty({
     required: false,
   })
-  @IsString()
   store: StoreDto;
 }
 

@@ -88,7 +88,6 @@ export class AuthService {
    * @returns {Promise<Profile>} registered profile
    */
   async validateUser(payload: LoginProfileDto) {
-    console.log({ payload });
     const user = await this.profileService.getByEmailAndPass(
       payload.email,
       payload.password,

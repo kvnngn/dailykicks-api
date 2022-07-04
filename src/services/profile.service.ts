@@ -159,7 +159,6 @@ class ProfileService {
    * @returns {Promise<Profile>} queried profile data
    */
   getByEmailAndPass(email: string, password: string) {
-    console.log(email, crypto.createHmac("sha256", password).digest("hex"));
     return this.profileModel.findOne({
       email,
       password: crypto.createHmac("sha256", password).digest("hex"),
