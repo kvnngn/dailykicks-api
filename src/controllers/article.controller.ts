@@ -56,6 +56,46 @@ export class ArticleController {
    * Retrieves articles from specific warehouse
    * @param page specify the page you requested
    * @param pageSize specify the page size you requested
+   * @returns {Promise<CCQueryResponse<Article>>} queried article data
+   */
+  @Get("/:id/store/byproducts")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiResponse({ status: 200, description: "Fetch Article Request Received" })
+  @ApiResponse({ status: 400, description: "Fetch Article Request Failed" })
+  async getStoreInventory(
+    @Query() pageOptionsDto: PageOptionsDto,
+    @Param("id") warehouseId: string,
+  ): Promise<PageDto<ArticleDto>> {
+    return await this.articleService.getStoreInventory(
+      pageOptionsDto,
+      warehouseId,
+    );
+  }
+
+  /**
+   * Retrieves articles from specific warehouse
+   * @param page specify the page you requested
+   * @param pageSize specify the page size you requested
+   * @returns {Promise<CCQueryResponse<Article>>} queried article data
+   */
+  @Get("/:id/warehouse/byproducts")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiResponse({ status: 200, description: "Fetch Article Request Received" })
+  @ApiResponse({ status: 400, description: "Fetch Article Request Failed" })
+  async getWarehouseInventory(
+    @Query() pageOptionsDto: PageOptionsDto,
+    @Param("id") warehouseId: string,
+  ): Promise<PageDto<ArticleDto>> {
+    return await this.articleService.getWarehouseInventory(
+      pageOptionsDto,
+      warehouseId,
+    );
+  }
+
+  /**
+   * Retrieves articles from specific warehouse
+   * @param page specify the page you requested
+   * @param pageSize specify the page size you requested
    * @returns {Promise<{ brands: BrandDto[]; brandModels: BrandModelDto[]}>}
    * queried article data
    */

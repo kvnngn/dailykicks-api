@@ -150,6 +150,158 @@ class ArticleService {
     return new PageDto(entities, pageMetaDto);
   }
 
+  async getWarehouseInventory(
+    pageOptionsDto: PageOptionsDto,
+    warehouseId: string,
+  ): Promise<PageDto<ArticleDto>> {
+    const filters = pageOptionsDto.filter;
+    let pipeline = [];
+
+    // match warehouse and populate references
+    pipeline.push(
+      {
+        $match: {
+          warehouse: new Types.ObjectId(warehouseId),
+        },
+      },
+      {
+        $group: {
+          _id: "$product",
+          total: {
+            $sum: {
+              $cond: [
+                {
+                  $eq: ["$transferedAt", null],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+          sizes: {
+            $push: {
+              $cond: [
+                {
+                  $eq: ["$transferedAt", null],
+                },
+                "$size",
+                "$$REMOVE",
+              ],
+            },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      {
+        $unwind: {
+          path: "$product",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    );
+
+    // add pagination, limit, sort
+    pipeline.push(
+      { $limit: Number(pageOptionsDto.limit) },
+      { $skip: Number(pageOptionsDto.skip) },
+      { $sort: { total: 1 } },
+    );
+
+    // add sort
+    if (pageOptionsDto.sort) {
+      pipeline.push({ $sort: JSON.parse(pageOptionsDto.sort) });
+    }
+
+    console.log(pipeline);
+    let entities = await this.articleModel.aggregate(pipeline);
+    let itemCount = await this.articleModel.countDocuments();
+    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+
+    return new PageDto(entities, pageMetaDto);
+  }
+
+  async getStoreInventory(
+    pageOptionsDto: PageOptionsDto,
+    storeId: string,
+  ): Promise<PageDto<ArticleDto>> {
+    const filters = pageOptionsDto.filter;
+    let pipeline = [];
+
+    // match warehouse and populate references
+    pipeline.push(
+      {
+        $match: {
+          store: new Types.ObjectId(storeId),
+        },
+      },
+      {
+        $group: {
+          _id: "$product",
+          total: {
+            $sum: {
+              $cond: [
+                {
+                  $eq: ["$soldAt", null],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+          sizes: {
+            $push: {
+              $cond: [
+                {
+                  $eq: ["$soldAt", null],
+                },
+                "$size",
+                "$$REMOVE",
+              ],
+            },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      {
+        $unwind: {
+          path: "$product",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    );
+    // add pagination, limit, sort
+    pipeline.push(
+      { $limit: Number(pageOptionsDto.limit) },
+      { $skip: Number(pageOptionsDto.skip) },
+      { $sort: { total: 1 } },
+    );
+
+    // add sort
+    if (pageOptionsDto.sort) {
+      pipeline.push({ $sort: JSON.parse(pageOptionsDto.sort) });
+    }
+
+    let entities = await this.articleModel.aggregate(pipeline);
+    let itemCount = await this.articleModel.countDocuments();
+    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+
+    return new PageDto(entities, pageMetaDto);
+  }
+
   async getAcdata(): Promise<{
     brands: string[];
     brandModels: string[];
