@@ -54,7 +54,17 @@ class WarehouseService {
           createdBy: 1,
           name: 1,
           updatedAt: 1,
-          articles: { $size: "$articles" },
+          articles: {
+            $size: {
+              $filter: {
+                input: "$articles",
+                as: "article",
+                cond: {
+                  $eq: ["$$article.transferedAt", null],
+                },
+              },
+            },
+          },
         },
       },
       { $limit: Number(pageOptionsDto.limit) },

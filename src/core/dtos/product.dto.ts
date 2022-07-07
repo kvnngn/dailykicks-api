@@ -6,7 +6,7 @@ import { BrandModelDto } from "./brandModel.dto";
 
 export class CreateProductDto {
   image_url: string;
-  colors: string[];
+  sku: string;
   brand: BrandDto;
   brandModel: BrandModelDto;
   createdBy: ProfileDto;

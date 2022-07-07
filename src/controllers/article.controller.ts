@@ -2,6 +2,7 @@ import {
   ArticleDto,
   SellArticleDto,
   TransferArticleDto,
+  TransferArticleToWarehouseDto,
 } from "../core/dtos/article.dto";
 import { AuthGuard } from "@nestjs/passport";
 import {
@@ -161,7 +162,23 @@ export class ArticleController {
   @ApiResponse({ status: 200, description: "Put Article Request Received" })
   @ApiResponse({ status: 400, description: "Put Article Request Failed" })
   async transfer(@Param("id") id: string, @Body() payload: TransferArticleDto) {
-    return await this.articleService.transfer(id, payload);
+    return await this.articleService.transferToStore(id, payload);
+  }
+
+  /**
+   * Transfer a article to warehouse
+   * @param {TransferArticleToWarehouseDto} payload
+   * @returns {Promise<Article>} mutated article data
+   */
+  @Put("/transfer/:id/warehouse")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiResponse({ status: 200, description: "Put Article Request Received" })
+  @ApiResponse({ status: 400, description: "Put Article Request Failed" })
+  async transferToWarehouse(
+    @Param("id") articleId: string,
+    @Body() payload: TransferArticleToWarehouseDto,
+  ) {
+    return await this.articleService.transferToWarehouse(articleId, payload);
   }
 
   /**

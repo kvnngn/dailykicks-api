@@ -8,17 +8,14 @@ export type ProductDocument = Product & Document;
 
 @Schema()
 export class Product {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   name: string;
 
   @Prop()
   image_url: string;
 
-  @Prop()
-  colors: string[];
-
-  @Prop()
-  price: number;
+  @Prop({ required: true })
+  sku: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,

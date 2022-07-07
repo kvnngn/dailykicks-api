@@ -1,14 +1,5 @@
 import { ProductDto } from "./product.dto";
-import {
-  IsString,
-  IsNotEmpty,
-  IsBoolean,
-  IsNumber,
-  IsAlphanumeric,
-  IsEmail,
-  Matches,
-  MinLength,
-} from "class-validator";
+import { IsString, IsNotEmpty, IsNumber } from "class-validator";
 import { PartialType } from "@nestjs/mapped-types";
 import { ProfileDto } from "./profile.dto";
 import { WarehouseDto } from "./warehouse.dto";
@@ -25,7 +16,6 @@ export class CreateArticleDto {
   warehousePrice: number;
   size: number;
   storePrice: number;
-  sku: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -46,10 +36,6 @@ export class ArticleDto {
   @IsString()
   @IsNotEmpty()
   store: StoreDto;
-
-  @IsString()
-  @IsNotEmpty()
-  sku: string;
 
   @IsString()
   soldAt: Date;
@@ -89,6 +75,15 @@ export class TransferArticleDto {
   })
   @IsNumber()
   transferPrice: number;
+}
+
+export class TransferArticleToWarehouseDto {
+  @ApiProperty({
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  updatedBy: string;
 }
 
 export class SellArticleDto {

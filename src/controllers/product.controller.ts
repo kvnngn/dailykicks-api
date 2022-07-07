@@ -113,10 +113,7 @@ export class ProductController {
     @UploadedFile() file: Express.Multer.File,
     @Body() payload,
   ): Promise<ProductDto> {
-    return this.productService.create(
-      { ...payload, colors: JSON.parse(payload.colors) },
-      file,
-    );
+    return this.productService.create({ ...payload }, file);
   }
 
   /**
@@ -134,11 +131,7 @@ export class ProductController {
     @Body() payload,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return await this.productService.update(
-      id,
-      { ...payload, colors: JSON.parse(payload.colors) },
-      file,
-    );
+    return await this.productService.update(id, { ...payload }, file);
   }
 
   /**

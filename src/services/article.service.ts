@@ -1,3 +1,4 @@
+import { TransferArticleToWarehouseDto } from "./../core/dtos/article.dto";
 import {
   CreateArticleDto,
   SellArticleDto,
@@ -125,9 +126,9 @@ class ArticleService {
           $match: { "product.brandModel": { $in: brandModels } },
         });
       }
-      if (parsedFilter.sku) {
+      if (parsedFilter.size) {
         pipeline.push({
-          $match: { sku: parsedFilter.sku },
+          $match: { size: parseInt(parsedFilter.size) },
         });
       }
     }
@@ -347,7 +348,24 @@ class ArticleService {
     return warehouse;
   }
 
-  async transfer(id: string, articleData: TransferArticleDto) {
+  async transferToWarehouse(
+    id: string,
+    articleData: TransferArticleToWarehouseDto,
+  ) {
+    const article = await this.articleModel
+      .findByIdAndUpdate(
+        { _id: id },
+        { ...articleData, store: null, transferedAt: null },
+        { new: true },
+      )
+      .populate([{ path: "createdBy", model: "Profile" }]);
+    if (!article) {
+      throw new NotFoundException();
+    }
+    return article;
+  }
+
+  async transferToStore(id: string, articleData: TransferArticleDto) {
     const article = await this.articleModel
       .findByIdAndUpdate(
         { _id: id },

@@ -171,7 +171,7 @@ class ProductService {
               : storedFile
             : null,
           name: `${brand.name} - ${brandModel.name}`,
-          colors: productData.colors,
+          sku: productData.sku,
         },
         { new: true },
       )

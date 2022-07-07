@@ -47,7 +47,17 @@ class StoreService {
           createdBy: 1,
           name: 1,
           updatedAt: 1,
-          articles: { $size: "$articles" },
+          articles: {
+            $size: {
+              $filter: {
+                input: "$articles",
+                as: "article",
+                cond: {
+                  $eq: ["$$article.soldAt", null],
+                },
+              },
+            },
+          },
         },
       },
       { $limit: Number(pageOptionsDto.limit) },

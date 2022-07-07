@@ -16,6 +16,10 @@ export interface ITokenReturnBody {
   /**
    * When the token is to expire in seconds
    */
+  store: string;
+  /**
+   * When the token is to expire in seconds
+   */
   expires: string;
   /**
    * A human-readable format of expires
@@ -57,12 +61,13 @@ export class AuthService {
    * @param {Profile} param dto to generate token from
    * @returns {Promise<ITokenReturnBody>} token body
    */
-  async createToken(_id: string): Promise<ITokenReturnBody> {
+  async createToken(user): Promise<ITokenReturnBody> {
     return {
-      userId: _id,
+      userId: user._id.toString(),
+      store: user.store,
       expires: this.expiration,
       expiresPrettyPrint: AuthService.prettyPrintSeconds(this.expiration),
-      token: this.jwtService.sign({ _id }),
+      token: this.jwtService.sign({ _id: user._id.toString() }),
     };
   }
 

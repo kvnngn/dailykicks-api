@@ -30,7 +30,7 @@ export class AuthController {
   @ApiResponse({ status: 401, description: "Unauthorized" })
   async login(@Body() payload: LoginProfileDto): Promise<ITokenReturnBody> {
     const user = await this.authService.validateUser(payload);
-    return await this.authService.createToken(user._id.toString());
+    return await this.authService.createToken(user);
   }
 
   /**
@@ -43,6 +43,6 @@ export class AuthController {
   @ApiResponse({ status: 401, description: "Unauthorized" })
   async register(@Body() payload: CreateProfileDto): Promise<ITokenReturnBody> {
     const user = await this.profileService.createAdmin(payload);
-    return await this.authService.createToken(user._id.toString());
+    return await this.authService.createToken(user);
   }
 }

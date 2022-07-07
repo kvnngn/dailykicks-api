@@ -57,9 +57,6 @@ export class Article {
   @Prop()
   size: number;
 
-  @Prop({ unique: true })
-  sku: string;
-
   @Prop({ default: new Date() })
   createdAt: Date;
   @Prop({ default: new Date() })
