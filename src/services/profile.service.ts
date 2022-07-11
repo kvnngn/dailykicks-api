@@ -136,7 +136,7 @@ class ProfileService {
 
     // add pagination, limit, sort
     pipeline.push(
-      { $limit: Number(pageOptionsDto.limit) },
+      { $limit: Number(pageOptionsDto.limit) + Number(pageOptionsDto.skip) },
       { $skip: Number(pageOptionsDto.skip) },
     );
 

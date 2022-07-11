@@ -60,7 +60,7 @@ class StoreService {
           },
         },
       },
-      { $limit: Number(pageOptionsDto.limit) },
+      { $limit: Number(pageOptionsDto.limit) + Number(pageOptionsDto.skip) },
       { $skip: Number(pageOptionsDto.skip) },
     ]);
 

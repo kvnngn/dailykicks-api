@@ -35,7 +35,7 @@ class ArticleService {
    * @param {Create} payload warehouse payload
    * @returns {Promise<Article>} created warehouse data
    */
-  async create(payload: CreateArticleDto) {
+  async create(payload) {
     console.log({ payload });
     let createdArticle = await this.articleModel.create({
       ...payload,
@@ -131,11 +131,21 @@ class ArticleService {
           $match: { size: parseInt(parsedFilter.size) },
         });
       }
+      if (parsedFilter.transferedAt && parsedFilter.transferedAt === "yes") {
+        pipeline.push({
+          $match: { transferedAt: null },
+        });
+      }
+      if (parsedFilter.soldAt && parsedFilter.soldAt === "yes") {
+        pipeline.push({
+          $match: { soldAt: null },
+        });
+      }
     }
 
     // add pagination, limit, sort
     pipeline.push(
-      { $limit: Number(pageOptionsDto.limit) },
+      { $limit: Number(pageOptionsDto.limit) + Number(pageOptionsDto.skip) },
       { $skip: Number(pageOptionsDto.skip) },
     );
 
@@ -146,7 +156,12 @@ class ArticleService {
 
     console.log(pipeline);
     let entities = await this.articleModel.aggregate(pipeline);
-    let itemCount = await this.articleModel.countDocuments();
+    let itemCount = await this.articleModel.countDocuments({
+      $or: [
+        { warehouse: new Types.ObjectId(warehouseId) },
+        { store: new Types.ObjectId(warehouseId) },
+      ],
+    });
     const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
 
     return new PageDto(entities, pageMetaDto);
@@ -211,7 +226,7 @@ class ArticleService {
 
     // add pagination, limit, sort
     pipeline.push(
-      { $limit: Number(pageOptionsDto.limit) },
+      { $limit: Number(pageOptionsDto.limit) + Number(pageOptionsDto.skip) },
       { $skip: Number(pageOptionsDto.skip) },
       { $sort: { total: 1 } },
     );
@@ -287,7 +302,7 @@ class ArticleService {
     );
     // add pagination, limit, sort
     pipeline.push(
-      { $limit: Number(pageOptionsDto.limit) },
+      { $limit: Number(pageOptionsDto.limit) + Number(pageOptionsDto.skip) },
       { $skip: Number(pageOptionsDto.skip) },
       { $sort: { total: 1 } },
     );

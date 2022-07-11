@@ -14,7 +14,7 @@ export class CreateArticleDto {
   soldAt: Date;
   transferedAt: Date;
   warehousePrice: number;
-  size: number;
+  sizes: Array<{ size: number; quantity: number }>;
   storePrice: number;
   createdAt: Date;
   updatedAt: Date;

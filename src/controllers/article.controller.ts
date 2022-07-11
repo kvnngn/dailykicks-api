@@ -135,8 +135,19 @@ export class ArticleController {
   @ApiResponse({ status: 200, description: "Article Creation Completed" })
   @ApiResponse({ status: 400, description: "Bad Request" })
   @ApiResponse({ status: 401, description: "Unauthorized" })
-  async add(@Body() payload: CreateArticleDto): Promise<ArticleDto> {
-    return this.articleService.create(payload);
+  async add(@Body() payload: CreateArticleDto): Promise<ArticleDto[]> {
+    const articles = [];
+    payload.sizes.forEach(async (sizeType) => {
+      for (let i = 0; i < sizeType.quantity; i++) {
+        const article = await this.articleService.create({
+          ...payload,
+          size: sizeType.size,
+        });
+        articles.push(article);
+      }
+    });
+
+    return articles;
   }
 
   /**
