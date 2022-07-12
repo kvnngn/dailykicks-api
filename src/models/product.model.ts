@@ -14,7 +14,7 @@ export class Product {
   @Prop()
   image_url: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   sku: string;
 
   @Prop({

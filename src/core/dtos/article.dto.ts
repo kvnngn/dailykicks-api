@@ -100,3 +100,12 @@ export class SellArticleDto {
   @IsNumber()
   sellingPrice: number;
 }
+
+export class RevertSellArticleDto {
+  @ApiProperty({
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  updatedBy: string;
+}

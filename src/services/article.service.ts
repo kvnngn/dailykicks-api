@@ -1,4 +1,7 @@
-import { TransferArticleToWarehouseDto } from "./../core/dtos/article.dto";
+import {
+  RevertSellArticleDto,
+  TransferArticleToWarehouseDto,
+} from "./../core/dtos/article.dto";
 import {
   CreateArticleDto,
   SellArticleDto,
@@ -238,8 +241,20 @@ class ArticleService {
 
     console.log(pipeline);
     let entities = await this.articleModel.aggregate(pipeline);
-    let itemCount = await this.articleModel.countDocuments();
-    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+    let itemCount = await this.articleModel.aggregate([
+      {
+        $match: {
+          warehouse: new Types.ObjectId(warehouseId),
+        },
+      },
+      {
+        $group: { _id: null, uniqueValues: { $addToSet: "$product" } },
+      },
+    ]);
+    const pageMetaDto = new PageMetaDto({
+      itemCount: itemCount.length ? itemCount[0].uniqueValues.length : 0,
+      pageOptionsDto,
+    });
 
     return new PageDto(entities, pageMetaDto);
   }
@@ -313,9 +328,20 @@ class ArticleService {
     }
 
     let entities = await this.articleModel.aggregate(pipeline);
-    let itemCount = await this.articleModel.countDocuments();
-    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
-
+    let itemCount = await this.articleModel.aggregate([
+      {
+        $match: {
+          store: new Types.ObjectId(storeId),
+        },
+      },
+      {
+        $group: { _id: null, uniqueValues: { $addToSet: "$product" } },
+      },
+    ]);
+    const pageMetaDto = new PageMetaDto({
+      itemCount: itemCount.length ? itemCount[0].uniqueValues.length : 0,
+      pageOptionsDto,
+    });
     return new PageDto(entities, pageMetaDto);
   }
 
@@ -399,6 +425,20 @@ class ArticleService {
       .findByIdAndUpdate(
         { _id: id },
         { ...articleData, soldAt: new Date() },
+        { new: true },
+      )
+      .populate([{ path: "createdBy", model: "Profile" }]);
+    if (!article) {
+      throw new NotFoundException();
+    }
+    return article;
+  }
+
+  async revertSell(id: string, articleData: RevertSellArticleDto) {
+    const article = await this.articleModel
+      .findByIdAndUpdate(
+        { _id: id },
+        { soldAt: null, updatedBy: articleData.updatedBy },
         { new: true },
       )
       .populate([{ path: "createdBy", model: "Profile" }]);

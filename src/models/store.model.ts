@@ -6,7 +6,7 @@ export type StoreDocument = Store & Document;
 
 @Schema()
 export class Store {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   name: string;
 
   @Prop({

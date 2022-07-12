@@ -1,5 +1,6 @@
 import {
   ArticleDto,
+  RevertSellArticleDto,
   SellArticleDto,
   TransferArticleDto,
   TransferArticleToWarehouseDto,
@@ -203,6 +204,22 @@ export class ArticleController {
   @ApiResponse({ status: 400, description: "Put Article Request Failed" })
   async sell(@Param("id") id: string, @Body() payload: SellArticleDto) {
     return await this.articleService.sell(id, payload);
+  }
+
+  /**
+   * Sell a article
+   * @param {SellArticleDto} payload
+   * @returns {Promise<Article>} mutated article data
+   */
+  @Put("/cancelsell/:id")
+  @UseGuards(AuthGuard("jwt"))
+  @ApiResponse({ status: 200, description: "Put Article Request Received" })
+  @ApiResponse({ status: 400, description: "Put Article Request Failed" })
+  async revertSell(
+    @Param("id") id: string,
+    @Body() payload: RevertSellArticleDto,
+  ) {
+    return await this.articleService.revertSell(id, payload);
   }
 
   /**

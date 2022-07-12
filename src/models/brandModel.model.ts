@@ -7,7 +7,7 @@ export type BrandModelDocument = BrandModel & Document;
 
 @Schema()
 export class BrandModel {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   name: string;
 
   @Prop({

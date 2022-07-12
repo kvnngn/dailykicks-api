@@ -11,7 +11,7 @@ export type WarehouseDocument = Warehouse & Document;
 
 @Schema()
 export class Warehouse {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   name: string;
 
   // @Prop({
