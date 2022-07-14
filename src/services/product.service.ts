@@ -146,15 +146,17 @@ class ProductService {
     if (!brand) {
       brand = await this.brandModel.create({
         name: productData.brand,
+        createdBy: productData.updatedBy,
       });
     }
     let brandModel = await this.brandModelModel.findOne({
       name: productData.brandModel,
     });
+    console.log({ productData });
     if (!brandModel) {
       brandModel = await this.brandModelModel.create({
         name: productData.brandModel,
-        createdBy: productData.createdBy,
+        createdBy: productData.updatedBy,
         brand,
       });
     }

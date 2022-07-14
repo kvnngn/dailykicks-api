@@ -22,4 +22,10 @@ export class ProductDto {
   createdBy: ProfileDto;
 }
 
-export class UpdateProductDto extends PartialType(CreateProductDto) {}
+export class UpdateProductDto {
+  image_url: string;
+  sku: string;
+  brand: BrandDto;
+  brandModel: BrandModelDto;
+  updatedBy: ProfileDto;
+}
