@@ -64,7 +64,7 @@ By default, the application comes with a config module that can read in every en
 
 **WEBTOKEN_SECRET_KEY** - the secret key to encrypt/decrypt web tokens with. Make sure to generate a random alphanumeric string for this.
 
-**WEBTOKEN_EXPIRATION_TIME** - **the time in seconds** indicating when the web token will expire; by default, it's 2400 seconds which is 40 mins.
+**WEBTOKEN_EXPIRATION_TIME** - **the time in seconds** indicating when the web token will expire; by default, it's 86400 seconds which is 24 hours.
 
 **DB_URL** - the URL to the MongoDB collection
 

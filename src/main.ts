@@ -13,6 +13,7 @@ import { ConfigService } from "@nestjs/config";
 import { AppModule } from "app.module";
 import { config } from "aws-sdk";
 import { contentParser } from "fastify-file-interceptor";
+import { MongoExceptionFilter } from "./utils/filters/mongo-exception.filter";
 
 /**
  * The url endpoint for open api ui
@@ -65,6 +66,7 @@ export const SWAGGER_API_CURRENT_VERSION = "1.0";
     timeWindow: 60000,
   });
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new MongoExceptionFilter());
 
   const configService = app.get(ConfigService);
   config.update({

@@ -1,5 +1,9 @@
 import { LoginProfileDto } from "core/dtos";
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Profile } from "core/entities";
 import { ConfigService } from "./config.service";
@@ -98,9 +102,7 @@ export class AuthService {
       payload.password,
     );
     if (!user) {
-      throw new UnauthorizedException(
-        "Could not authenticate. Please try again.",
-      );
+      throw new ForbiddenException("Could not authenticate. Please try again.");
     }
     return user;
   }

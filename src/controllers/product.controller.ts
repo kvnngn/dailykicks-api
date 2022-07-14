@@ -12,17 +12,14 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  UseFilters,
+  ForbiddenException,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
-import {
-  CreateProductDto,
-  PageDto,
-  PageOptionsDto,
-  UpdateProductDto,
-  ProductDto,
-} from "core/dtos";
+import { PageDto, PageOptionsDto, ProductDto } from "core/dtos";
 import ProductService from "services/product.service";
 import { FileFastifyInterceptor } from "fastify-file-interceptor";
+import { MongoExceptionFilter } from "../utils/filters/mongo-exception.filter";
 
 /**
  * Product Controller
@@ -105,6 +102,7 @@ export class ProductController {
    * @param {CreateProductDto} payload the registration dto
    */
   @Post("add")
+  @UseFilters(MongoExceptionFilter)
   @ApiResponse({ status: 200, description: "Product Creation Completed" })
   @ApiResponse({ status: 400, description: "Bad Request" })
   @ApiResponse({ status: 401, description: "Unauthorized" })
