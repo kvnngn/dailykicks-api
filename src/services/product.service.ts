@@ -87,7 +87,9 @@ class ProductService {
         { path: "brand", model: "Brand" },
         { path: "brandModel", model: "BrandModel" },
       ]);
-    let itemCount = await this.productModel.countDocuments();
+    let itemCount = await this.productModel.countDocuments({
+      name: { $regex: new RegExp(name, "i") },
+    });
     const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
 
     return new PageDto(entities, pageMetaDto);
