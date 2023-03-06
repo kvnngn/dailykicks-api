@@ -374,6 +374,22 @@ class ArticleService {
       ]);
   }
 
+  /**
+   * Fetches a warehouse from database by productId
+   * @param {string} id
+   * @returns {Promise<Article[]>} queried warehouse data
+   */
+  getByProductId(productId: string) {
+    return this.articleModel
+      .find({
+        product: productId,
+      })
+      .populate([
+        { path: "createdBy", model: "Profile" },
+        { path: "product", model: "Product" },
+      ]);
+  }
+
   async update(id: string, articleData: UpdateArticleDto) {
     const article = await this.articleModel
       .findByIdAndUpdate({ _id: id }, articleData, { new: true })

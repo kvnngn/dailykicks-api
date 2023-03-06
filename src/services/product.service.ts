@@ -33,11 +33,13 @@ class ProductService {
    * @returns {Promise<Product>} created warehouse data
    */
   async create(payload: CreateProductDto, file: Express.Multer.File) {
-    const storedFile = await this.filesService.uploadPublicFile(
-      file.buffer,
-      `${file.originalname}`,
-    );
-    console.log({ storedFile });
+    let storedFile = null;
+    if (file?.buffer) {
+      storedFile = await this.filesService.uploadPublicFile(
+        file.buffer,
+        `${file.originalname}`,
+      );
+    }
     let brand = await this.brandModel.findOne({
       name: payload.brand,
     });
@@ -63,7 +65,7 @@ class ProductService {
       brand: brand._id,
       brandModel: brandModel._id,
       name: `${brand.name} - ${brandModel.name}`,
-      image_url: storedFile.url,
+      image_url: storedFile?.url || null,
     });
 
     return createdProduct;
@@ -134,13 +136,13 @@ class ProductService {
     file: Express.Multer.File,
   ) {
     let storedFile = null;
-    if (file && typeof file === "object" && file.buffer) {
+    if (file?.buffer) {
       storedFile = await this.filesService.uploadPublicFile(
         file.buffer,
         `${file.originalname}`,
       );
     } else {
-      storedFile = productData.image_url;
+      storedFile = productData?.image_url || null;
     }
     let brand = await this.brandModel.findOne({
       name: productData.brand,
@@ -154,7 +156,6 @@ class ProductService {
     let brandModel = await this.brandModelModel.findOne({
       name: productData.brandModel,
     });
-    console.log({ productData });
     if (!brandModel) {
       brandModel = await this.brandModelModel.create({
         name: productData.brandModel,
@@ -162,6 +163,8 @@ class ProductService {
         brand,
       });
     }
+
+    console.log({ storedFile });
 
     const product = await this.productModel
       .findByIdAndUpdate(

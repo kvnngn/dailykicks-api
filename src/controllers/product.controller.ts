@@ -20,6 +20,7 @@ import { PageDto, PageOptionsDto, ProductDto } from "core/dtos";
 import ProductService from "services/product.service";
 import { FileFastifyInterceptor } from "fastify-file-interceptor";
 import { MongoExceptionFilter } from "../utils/filters/mongo-exception.filter";
+import ArticleService from "services/article.service";
 
 /**
  * Product Controller
@@ -33,7 +34,10 @@ export class ProductController {
    * Constructor
    * @param ProductUseCases
    */
-  constructor(private readonly productService: ProductService) {}
+  constructor(
+    private readonly productService: ProductService,
+    private readonly articleService: ArticleService,
+  ) {}
 
   /**
    * Retrieves a particular product
@@ -145,6 +149,12 @@ export class ProductController {
   })
   @ApiResponse({ status: 400, description: "Delete Product Request Failed" })
   async delete(@Param("id") id: string) {
+    const articles = await this.articleService.getByProductId(id);
+    if (articles.length > 0) {
+      for (const article of articles) {
+        await this.articleService.delete(article._id.toString());
+      }
+    }
     return await this.productService.delete(id);
   }
 }
