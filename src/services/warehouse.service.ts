@@ -29,8 +29,6 @@ class WarehouseService {
   }
 
   async get(pageOptionsDto: PageOptionsDto): Promise<PageDto<WarehouseDto>> {
-    console.log("test", { pageOptionsDto });
-
     const PAGE_SIZE = pageOptionsDto.limit;
     const name = pageOptionsDto.searchQuery || ".";
 

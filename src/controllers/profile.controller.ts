@@ -66,7 +66,6 @@ export class ProfileController {
   @ApiResponse({ status: 400, description: "Fetch Profile Request Failed" })
   async getProfileById(@Param("id") id: string) {
     const profile = await this.profileService.getById(id);
-    console.log({ profile });
     if (!profile) {
       throw new BadRequestException(
         "The profile with that id could not be found.",
@@ -88,8 +87,6 @@ export class ProfileController {
     @Query() pageOptionsDto: PageOptionsDto,
     @Param("id") storeId: string,
   ): Promise<PageDto<ProfileDto>> {
-    console.log(pageOptionsDto);
-    console.log(storeId);
     return await this.profileService.getByStore(pageOptionsDto, storeId);
   }
 

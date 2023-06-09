@@ -71,7 +71,7 @@ export class ProductController {
         "The product with that id could not be found.",
       );
     }
-    console.log({ product });
+
     return product;
   }
 

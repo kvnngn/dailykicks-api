@@ -14,6 +14,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { FilesService } from "./files.service";
 import _ from "lodash";
+import { buildRegexQuery } from "utils/filters/regex";
 
 @Injectable()
 class ProductService {
@@ -73,13 +74,13 @@ class ProductService {
 
   async get(pageOptionsDto: PageOptionsDto): Promise<PageDto<ProductDto>> {
     console.log({ pageOptionsDto });
-
     const PAGE_SIZE = pageOptionsDto.limit;
     const name = pageOptionsDto.searchQuery || ".";
-
+    const { sku } = JSON.parse(pageOptionsDto.filter ?? "{}");
     let entities = await this.productModel
       .find({
-        name: { $regex: new RegExp(name, "i") },
+        name: buildRegexQuery(name),
+        sku: buildRegexQuery(sku),
       })
       .sort(pageOptionsDto.sort)
       .skip(pageOptionsDto.skip)
@@ -90,7 +91,8 @@ class ProductService {
         { path: "brandModel", model: "BrandModel" },
       ]);
     let itemCount = await this.productModel.countDocuments({
-      name: { $regex: new RegExp(name, "i") },
+      name: buildRegexQuery(name),
+      sku: buildRegexQuery(sku),
     });
     const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
 
@@ -163,8 +165,6 @@ class ProductService {
         brand,
       });
     }
-
-    console.log({ storedFile });
 
     const product = await this.productModel
       .findByIdAndUpdate(

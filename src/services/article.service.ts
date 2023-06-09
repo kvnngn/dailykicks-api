@@ -21,6 +21,7 @@ import {
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import _ from "lodash";
+import { buildRegexQuery } from "utils/filters/regex";
 
 @Injectable()
 class ArticleService {
@@ -39,7 +40,6 @@ class ArticleService {
    * @returns {Promise<Article>} created warehouse data
    */
   async create(payload) {
-    console.log({ payload });
     let createdArticle = await this.articleModel.create({
       ...payload,
     });
@@ -51,8 +51,6 @@ class ArticleService {
     pageOptionsDto: PageOptionsDto,
     warehouseId: string,
   ): Promise<PageDto<ArticleDto>> {
-    console.log(pageOptionsDto);
-    console.log(warehouseId);
     const filters = pageOptionsDto.filter;
     let pipeline = [];
 
@@ -157,7 +155,6 @@ class ArticleService {
       pipeline.push({ $sort: JSON.parse(pageOptionsDto.sort) });
     }
 
-    console.log(pipeline);
     let entities = await this.articleModel.aggregate(pipeline);
     let itemCount = await this.articleModel.countDocuments({
       $or: [
@@ -174,7 +171,7 @@ class ArticleService {
     pageOptionsDto: PageOptionsDto,
     warehouseId: string,
   ): Promise<PageDto<ArticleDto>> {
-    const filters = pageOptionsDto.filter;
+    const { sku } = JSON.parse(pageOptionsDto.filter || "{}");
     let pipeline = [];
 
     // match warehouse and populate references
@@ -234,12 +231,21 @@ class ArticleService {
       { $sort: { total: 1 } },
     );
 
+    if (sku) {
+      pipeline.push({
+        $match: {
+          "product.sku": buildRegexQuery(sku),
+        },
+      });
+    }
+
     // add sort
     if (pageOptionsDto.sort) {
       pipeline.push({ $sort: JSON.parse(pageOptionsDto.sort) });
     }
 
-    console.log(pipeline);
+    console.log({ pipeline });
+
     let entities = await this.articleModel.aggregate(pipeline);
     let itemCount = await this.articleModel.aggregate([
       {
@@ -263,7 +269,7 @@ class ArticleService {
     pageOptionsDto: PageOptionsDto,
     storeId: string,
   ): Promise<PageDto<ArticleDto>> {
-    const filters = pageOptionsDto.filter;
+    const { sku } = JSON.parse(pageOptionsDto.filter || "{}");
     let pipeline = [];
 
     // match warehouse and populate references
@@ -315,6 +321,15 @@ class ArticleService {
         },
       },
     );
+
+    if (sku) {
+      pipeline.push({
+        $match: {
+          "product.sku": buildRegexQuery(sku),
+        },
+      });
+    }
+
     // add pagination, limit, sort
     pipeline.push(
       { $limit: Number(pageOptionsDto.limit) + Number(pageOptionsDto.skip) },
